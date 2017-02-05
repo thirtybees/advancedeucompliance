@@ -2,9 +2,9 @@
 <module>
   <name>advancedeucompliance</name>
   <displayName><![CDATA[Advanced EU Compliance]]></displayName>
-  <version><![CDATA[2.0.2]]></version>
+  <version><![CDATA[3.0.0]]></version>
   <description><![CDATA[This module helps European merchants in getting compliant with applicable e-commerce law.]]></description>
-  <author><![CDATA[PrestaShop]]></author>
+  <author><![CDATA[thirty bees]]></author>
   <tab><![CDATA[administration]]></tab>
   <confirmUninstall><![CDATA[Are you sure you want to uninstall this module?]]></confirmUninstall>
   <is_configurable>1</is_configurable>
