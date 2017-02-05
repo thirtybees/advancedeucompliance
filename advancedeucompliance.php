@@ -508,10 +508,13 @@ class Advancedeucompliance extends Module
         }
     }
 
-    private function emptyTemplatesCache()
+    /**
+     * @since 1.0.0
+     */
+    protected function emptyTemplatesCache()
     {
-        $this->_clearCache('product.tpl');
-        $this->_clearCache('product-list.tpl');
+        $this->clearCache('product.tpl');
+        $this->clearCache('product-list.tpl');
     }
 
     public function uninstall()
