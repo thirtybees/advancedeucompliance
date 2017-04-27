@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
 CWD_BASENAME=${PWD##*/}
 
-FILES=("ajax-upgradetab.php")
-FILES+=("alias.php")
-FILES+=("cacert.pem")
-FILES+=("functions.php")
+FILES+=("${CWD_BASENAME}.php")
 FILES+=("index.php")
 FILES+=("init.php")
 FILES+=("logo.gif")
 FILES+=("logo.png")
-FILES+=("${CWD_BASENAME}.php")
-FILES+=("cache/**")
-FILES+=("classes/**")
-FILES+=("upgrade/**")
+FILES+=("Readme.md")
+FILES+=("controllers/**")
+FILES+=("entities/**")
+FILES+=("install/**")
+FILES+=("translations/**")
 FILES+=("views/**")
 
 
