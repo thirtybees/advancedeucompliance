@@ -75,7 +75,7 @@ class Advancedeucompliance extends Module
 
         $this->name = 'advancedeucompliance';
         $this->tab = 'administration';
-        $this->version = '3.0.0';
+        $this->version = '3.0.1';
         $this->author = 'thirty bees';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -127,6 +127,8 @@ class Advancedeucompliance extends Module
      * Load database tables
      *
      * @return bool
+     *
+     * @since 1.0.0
      */
     public function loadTables()
     {
@@ -170,6 +172,8 @@ class Advancedeucompliance extends Module
      * Get CMS roles
      *
      * @return array
+     *
+     * @since 1.0.0
      */
     protected function getCMSRoles()
     {
@@ -188,6 +192,8 @@ class Advancedeucompliance extends Module
      * Install general hooks
      *
      * @return bool
+     *
+     * @since 1.0.0
      */
     public function installHooks()
     {
@@ -233,6 +239,8 @@ class Advancedeucompliance extends Module
 
     /**
      * @return bool
+     *
+     * @since 1.0.0
      */
     public function registerModulesBackwardCompatHook()
     {
@@ -268,6 +276,13 @@ class Advancedeucompliance extends Module
         return $return;
     }
 
+    /**
+     * Create config
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function createConfig()
     {
         $deliveryTimeAvailableValues = [];
@@ -320,6 +335,11 @@ class Advancedeucompliance extends Module
             Configuration::updateValue('PS_PRODUCT_WEIGHT_PRECISION', (int) $psWeightPrecisionInstalled);
     }
 
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucFeatTellAFriend($isOptionActive)
     {
         $stafModule = Module::getInstanceByName('sendtoafriend');
@@ -339,6 +359,11 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucFeatReorder($isOptionActive)
     {
 
@@ -349,6 +374,11 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucFeatAdvPaymentApi($isOptionActive)
     {
         $this->refreshThemeStatus();
@@ -369,6 +399,9 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
     private function refreshThemeStatus()
     {
         if ((bool) Configuration::get('AEUC_IS_THEME_COMPLIANT') === false) {
@@ -379,12 +412,16 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function isThemeCompliant()
     {
         $return = true;
 
         foreach ($this->getRequiredThemeTemplate() as $requiredTpl) {
-
             if (!is_file(_PS_THEME_DIR_.$requiredTpl)) {
                 $this->missing_templates[] = $requiredTpl;
                 $return = false;
@@ -394,12 +431,11 @@ class Advancedeucompliance extends Module
         return $return;
     }
 
-    /*
-        This method checks if cart has virtual products
-        It's better to add this method (as hasVirtualProduct) and add 'protected static $_hasVirtualProduct = array(); property
-        in Cart class in next version of prestashop.
-    */
-
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
     public function getRequiredThemeTemplate()
     {
         return [
@@ -413,12 +449,17 @@ class Advancedeucompliance extends Module
         ];
     }
 
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucLabelRevocationTOS($isOptionActive)
     {
         // Check first if LEGAL_REVOCATION CMS Role has been set before doing anything here
-        $cms_role_repository = $this->entity_manager->getRepository('CMSRole');
-        $cmsPageAssociated = $cms_role_repository->findOneByName(Advancedeucompliance::LEGAL_REVOCATION);
-        $cms_roles = $this->getCMSRoles();
+        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_REVOCATION);
+        $cmsRoles = $this->getCMSRoles();
 
         if ((bool) $isOptionActive) {
             if (!$cmsPageAssociated instanceof CMSRole || (int) $cmsPageAssociated->id_cms == 0) {
@@ -427,7 +468,8 @@ class Advancedeucompliance extends Module
                         $this->l(
                             '\'Revocation Terms within ToS\' label cannot be activated unless you associate "%s" role with a CMS Page.',
                             'advancedeucompliance'
-                        ), (string) $cms_roles[Advancedeucompliance::LEGAL_REVOCATION]
+                        ),
+                        (string) $cmsRoles[Advancedeucompliance::LEGAL_REVOCATION]
                     );
 
                 return;
@@ -438,7 +480,13 @@ class Advancedeucompliance extends Module
         }
     }
 
-    /* This hook is present to maintain backward compatibility */
+    /**
+     * This hook is present to maintain backward compatibility
+     *
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucLabelRevocationVP($isOptionActive)
     {
         if ((bool) $isOptionActive) {
@@ -448,6 +496,11 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucLabelSpecificPrice($isOptionActive)
     {
         if ((bool) $isOptionActive) {
@@ -457,11 +510,21 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucLabelTaxIncExc($isOptionActive)
     {
         Configuration::updateValue('AEUC_LABEL_TAX_INC_EXC', (bool) $isOptionActive);
     }
 
+    /**
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucLabelShippingIncExc($isOptionActive)
     {
         // Check first if LEGAL_SHIP_PAY CMS Role has been set before doing anything here
@@ -476,7 +539,8 @@ class Advancedeucompliance extends Module
                         $this->l(
                             'Shipping fees label cannot be activated unless you associate "%s" role with a CMS Page',
                             'advancedeucompliance'
-                        ), (string) $cmsRoles[Advancedeucompliance::LEGAL_SHIP_PAY]
+                        ),
+                        (string) $cmsRoles[Advancedeucompliance::LEGAL_SHIP_PAY]
                     );
 
                 return;
@@ -488,6 +552,11 @@ class Advancedeucompliance extends Module
 
     }
 
+    /**
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucLabelWeight($isOptionActive)
     {
         if ((bool) $isOptionActive) {
@@ -499,6 +568,11 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
     protected function processAeucLabelCombinationFrom($isOptionActive)
     {
         if ((bool) $isOptionActive) {
@@ -513,10 +587,17 @@ class Advancedeucompliance extends Module
      */
     protected function emptyTemplatesCache()
     {
-        $this->clearCache('product.tpl');
-        $this->clearCache('product-list.tpl');
+        $this->_clearCache('product.tpl');
+        $this->_clearCache('product-list.tpl');
     }
 
+    /**
+     * Uninstall this module
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function uninstall()
     {
         return parent::uninstall() &&
@@ -524,6 +605,13 @@ class Advancedeucompliance extends Module
             $this->uninstallTables();
     }
 
+    /**
+     * Drop config
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function dropConfig()
     {
         // Remove roles
@@ -533,9 +621,9 @@ class Advancedeucompliance extends Module
         $cleaned = true;
 
         foreach ($roles as $role) {
-            $cms_role_tmp = $cmsRoleRepository->findOneByName($role);
-            if ($cms_role_tmp) {
-                $cleaned &= $cms_role_tmp->delete();
+            $cmsRoleTmp = $cmsRoleRepository->findOneByName($role);
+            if ($cmsRoleTmp) {
+                $cleaned &= $cmsRoleTmp->delete();
             }
         }
 
@@ -557,6 +645,11 @@ class Advancedeucompliance extends Module
             Configuration::updateValue('PS_ATCP_SHIPWRAP', false);
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function uninstallTables()
     {
         $state = true;
@@ -568,6 +661,13 @@ class Advancedeucompliance extends Module
         return $state;
     }
 
+    /**
+     * @param bool $forceAll
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function disable($forceAll = false)
     {
         $isAdvancedApiDisabled = (bool) Configuration::updateValue('PS_ADVANCED_PAYMENT_API', false);
@@ -576,6 +676,13 @@ class Advancedeucompliance extends Module
         return parent::disable() && $isAdvancedApiDisabled;
     }
 
+    /**
+     * @param $param
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function hookDisplayCartTotalPriceLabel($param)
     {
         $smartyVars = [];
@@ -607,6 +714,13 @@ class Advancedeucompliance extends Module
         return $this->display(__FILE__, 'displayCartTotalPriceLabel.tpl');
     }
 
+    /**
+     * @param $param
+     *
+     * @return array|null
+     *
+     * @since 1.0.0
+     */
     public function hookAdvancedPaymentOptions($param)
     {
         $legacyOptions = Hook::exec('displayPaymentEU', [], null, true);
@@ -654,7 +768,6 @@ class Advancedeucompliance extends Module
         );
         if ($legacyOptions) {
             foreach ($legacyOptions as $moduleName => $legacyOption) {
-
                 if (!$legacyOption) {
                     continue;
                 }
@@ -676,6 +789,11 @@ class Advancedeucompliance extends Module
         return null;
     }
 
+    /**
+     * @param $param
+     *
+     * @since 1.0.0
+     */
     public function hookActionEmailAddAfterContent($param)
     {
         if (!isset($param['template']) || !isset($param['template_html']) || !isset($param['template_txt'])) {
@@ -730,6 +848,11 @@ class Advancedeucompliance extends Module
 
     }
 
+    /**
+     * @param $param
+     *
+     * @since 1.0.0
+     */
     public function hookHeader($param)
     {
         $cssRequired = [
@@ -748,6 +871,13 @@ class Advancedeucompliance extends Module
 
     }
 
+    /**
+     * @param $param
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function hookOverrideTOSDisplay($param)
     {
         $hasTosOverrideOpt = (bool) Configuration::get('AEUC_LABEL_REVOCATION_TOS');
@@ -837,6 +967,13 @@ class Advancedeucompliance extends Module
         return false;
     }
 
+    /**
+     * @param $params
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function hookDisplayBeforeShoppingCartBlock($params)
     {
         if ($this->context->controller instanceof OrderOpcController || property_exists($this->context->controller, 'step') && $this->context->controller->step == 3) {
@@ -865,6 +1002,13 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @param $param
+     *
+     * @return string|void
+     *
+     * @since 1.0.0
+     */
     public function hookDisplayProductPriceBlock($param)
     {
         if (!isset($param['product']) || !isset($param['type'])) {
@@ -874,8 +1018,8 @@ class Advancedeucompliance extends Module
         $product = $param['product'];
 
         if (is_array($product)) {
-            $product_repository = $this->entity_manager->getRepository('Product');
-            $product = $product_repository->findOne((int) $product['id_product']);
+            $productRepository = $this->entity_manager->getRepository('Product');
+            $product = $productRepository->findOne((int) $product['id_product']);
         }
         if (!Validate::isLoadedObject($product)) {
             return;
@@ -994,18 +1138,25 @@ class Advancedeucompliance extends Module
             $smartyVars['after_price'] = [];
 
             if ($isProductAvailable) {
-                $contextualized_content =
+                $contextualizedContent =
                     Configuration::get('AEUC_LABEL_DELIVERY_TIME_AVAILABLE', (int) $contextIdLang);
-                $smartyVars['after_price']['delivery_str_i18n'] = $contextualized_content;
+                $smartyVars['after_price']['delivery_str_i18n'] = $contextualizedContent;
             } else {
-                $contextualized_content = Configuration::get('AEUC_LABEL_DELIVERY_TIME_OOS', (int) $contextIdLang);
-                $smartyVars['after_price']['delivery_str_i18n'] = $contextualized_content;
+                $contextualizedContent = Configuration::get('AEUC_LABEL_DELIVERY_TIME_OOS', (int) $contextIdLang);
+                $smartyVars['after_price']['delivery_str_i18n'] = $contextualizedContent;
             }
 
             return $this->dumpHookDisplayProductPriceBlock($smartyVars);
         }
     }
 
+    /**
+     * @param array $smartyVars
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     private function dumpHookDisplayProductPriceBlock(array $smartyVars)
     {
         $this->context->smarty->assign(['smartyVars' => $smartyVars]);
@@ -1024,8 +1175,8 @@ class Advancedeucompliance extends Module
         $successBand = $this->_postProcess();
         if ((bool) Configuration::get('AEUC_IS_THEME_COMPLIANT') === false) {
             $missing = '<ul>';
-            foreach ($this->missing_templates as $missing_tpl) {
-                $missing .= '<li>'.$missing_tpl.' '.$this->l('missing').'</li>';
+            foreach ($this->missing_templates as $missingTpl) {
+                $missing .= '<li>'.$missingTpl.' '.$this->l('missing').'</li>';
             }
             $missing .= '</ul><br/>';
             $discardWarningLink = $this->context->link->getAdminLink('AdminModules', false).
@@ -1087,7 +1238,6 @@ class Advancedeucompliance extends Module
                 $key = Tools::toCamelCase($key);
 
                 if (method_exists($this, 'process'.$key)) {
-
                     $this->{'process'.$key}($isOptionActive);
                     $hasProcessedSomething = true;
                 }
