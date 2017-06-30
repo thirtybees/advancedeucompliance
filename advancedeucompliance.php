@@ -863,16 +863,18 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param array $param
-     *
      * @return string
      *
      * @since 1.0.0
      */
-    public function hookOverrideTOSDisplay($param)
+    public function hookOverrideTOSDisplay()
     {
         $hasTosOverrideOpt = (bool) Configuration::get('AEUC_LABEL_REVOCATION_TOS');
         $cmsRepository = $this->entityManager->getRepository('CMS');
+
+        if (!$cmsRepository instanceof Core_Business_CMS_CMSRepository) {
+            return '';
+        }
         // Check first if LEGAL_REVOCATION CMS Role is set
         $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
         $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_REVOCATION);
@@ -908,6 +910,9 @@ class Advancedeucompliance extends Module
 
         // Get CMS OBJs
         $cmsConditions = $cmsRepository->i10nFindOneById($cmsConditionsId, $idLang, $idShop);
+        if (!Validate::isLoadedObject($cmsConditions)) {
+            return '';
+        }
         $linkConditions = $this->context->link->getCMSLink($cmsConditions, $cmsConditions->link_rewrite, $isSslEnabled);
 
         if (!strpos($linkConditions, '?')) {
@@ -1215,6 +1220,7 @@ class Advancedeucompliance extends Module
             'AEUC_emailAttachmentsManager',
             'PS_PRODUCT_WEIGHT_PRECISION',
             'discard_tpl_warn',
+            'PS_ATCP_SHIPWRAP_ROUNDING',
         ];
 
         $i10NInputsReceived = [];
@@ -1270,6 +1276,10 @@ class Advancedeucompliance extends Module
                 $idLang = (int) $exploded[$count - 1];
                 $i10NInputsReceived['AEUC_SHOPPING_CART_TEXT_AFTER'][$idLang] = $receivedValues[$keyReceived];
             }
+        }
+
+        if (Tools::isSubmit('PS_ATCP_SHIPWRAP_ROUNDING')) {
+            Configuration::updateValue('PS_ATCP_SHIPWRAP_ROUNDING', (int) Tools::getValue('PS_ATCP_SHIPWRAP_ROUNDING'));
         }
 
         if (count($i10NInputsReceived) > 0) {
@@ -1333,6 +1343,7 @@ class Advancedeucompliance extends Module
             'AEUC_FEAT_REORDER'         => !Configuration::get('PS_DISALLOW_HISTORY_REORDERING'),
             'AEUC_FEAT_ADV_PAYMENT_API' => Configuration::get('AEUC_FEAT_ADV_PAYMENT_API'),
             'PS_ATCP_SHIPWRAP'          => Configuration::get('PS_ATCP_SHIPWRAP'),
+            'PS_ATCP_SHIPWRAP_ROUNDING' => Configuration::get('PS_ATCP_SHIPWRAP_ROUNDING'),
         ];
     }
 
@@ -1851,6 +1862,38 @@ class Advancedeucompliance extends Module
                                 'value' => false,
                                 'label' => $this->l('Disabled', 'advancedeucompliance'),
                             ],
+                        ],
+                    ],
+                    [
+                        'type'    => 'select',
+                        'label'   => $this->l('Round type for calculating proportionate taxes'),
+                        'desc'    => $this->l('You can choose what method to apply for rounding the proportionate tax: the same as the `round type` setting on the Preferences page, either on each item, each line or the total (of an invoice, for example). No rounding uses the product prices (up to 6 decimals) to calculate the exact proportion. This is the most accurate option. The applied method will then be used to calculate the proportionate shipping and/or gift wrapping taxes.'),
+                        'name'    => 'PS_ATCP_SHIPWRAP_ROUNDING',
+                        'options' => [
+                            'query' => [
+                                [
+                                    'id'   => 0,
+                                    'name' => $this->l('Same as the `round type` setting'),
+                                ],
+                                [
+                                    'id'   => Order::ROUND_ITEM,
+                                    'name' => $this->l('Round on each item'),
+                                ],
+                                [
+                                    'id'   => Order::ROUND_LINE,
+                                    'name' => $this->l('Round on each line'),
+                                ],
+                                [
+                                    'id'   => Order::ROUND_TOTAL,
+                                    'name' => $this->l('Round on the total'),
+                                ],
+                                [
+                                    'id'   => 4,
+                                    'name' => $this->l('No rounding'),
+                                ],
+                            ],
+                            'name'  => 'name',
+                            'id'    => 'id',
                         ],
                     ],
                 ],
