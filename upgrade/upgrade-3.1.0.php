@@ -27,34 +27,10 @@ if (!defined('_TB_VERSION_')) {
     exit;
 }
 
-/**
- * Class AdminAEUCController
- *
- * @since 1.0.0
- */
-class AdminAEUCController extends ModuleAdminController
+function upgrade_module_3_1_0($module)
 {
-    /**
-     * AdminAEUCController constructor.
-     */
-    public function __construct()
-    {
-        $this->bootstrap = true;
-        $this->display = 'view';
-        $this->meta_title = $this->l('Advanced EU Compliance');
-        parent::__construct();
-        if (!$this->module->active) {
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminHome'));
-        }
-    }
+    Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'aeuc_email` CHANGE `id_email` id_aeuc_email INT(11) UNSIGNED NOT NULL AUTO_INCREMENT');
+    Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'aeuc_cmsrole_email` CHANGE `id` id_aeuc_cmsrole_email INT(11) UNSIGNED NOT NULL AUTO_INCREMENT');
 
-    /**
-     * Render view
-     *
-     * @return string
-     */
-    public function renderView()
-    {
-        return parent::renderView();
-    }
+    return true;
 }

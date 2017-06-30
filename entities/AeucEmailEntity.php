@@ -23,6 +23,10 @@
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+if (!defined('_TB_VERSION_')) {
+    exit;
+}
+
 /**
  * Class AeucEmailEntity
  *
@@ -35,11 +39,10 @@ class AeucEmailEntity extends ObjectModel
      */
     public static $definition = [
         'table'   => 'aeuc_email',
-        'primary' => 'id',
+        'primary' => 'id_aeuc_email',
         'fields'  => [
-            'id_mail'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'filename'     => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 64],
-            'display_name' => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 64],
+            'filename'     => ['type' => self::TYPE_STRING, 'required' => true, 'db_type' => 'VARCHAR(64)', 'size' => 64],
+            'display_name' => ['type' => self::TYPE_STRING, 'required' => true, 'db_type' => 'VARCHAR(64)', 'size' => 64],
         ],
     ];
     // @codingStandardsIgnoreStart
@@ -59,20 +62,25 @@ class AeucEmailEntity extends ObjectModel
      */
     public static function getAll()
     {
-        $sql = '
-		SELECT *
-		FROM `'._DB_PREFIX_.AeucEmailEntity::$definition['table'].'`';
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from(bqSQL(static::$definition['table']))
+        );
     }
 
+    /**
+     * @param string $tplName
+     *
+     * @return array|bool|null|object
+     */
     public static function getMailIdFromTplFilename($tplName)
     {
-        $sql = '
-		SELECT `id_mail`
-		FROM `'._DB_PREFIX_.AeucEmailEntity::$definition['table'].'`
-		WHERE `filename` = "'.pSQL($tplName).'"';
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_mail`')
+                ->from(bqSQL(static::$definition['table']))
+                ->where('`filename` = \''.pSQL($tplName).'\'')
+        );
     }
 }

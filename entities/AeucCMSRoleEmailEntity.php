@@ -23,6 +23,10 @@
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+if (!defined('_TB_VERSION_')) {
+    exit;
+}
+
 /**
  * Class AeucCMSRoleEmailEntity
  *
@@ -35,10 +39,10 @@ class AeucCMSRoleEmailEntity extends ObjectModel
      */
     public static $definition = [
         'table'   => 'aeuc_cmsrole_email',
-        'primary' => 'id',
+        'primary' => 'id_aeuc_cmsrole_email',
         'fields'  => [
-            'id_mail'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'id_cms_role' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'id_mail'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true, 'db_type' => 'INT(11) UNSIGNED'],
+            'id_cms_role' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true, 'db_type' => 'INT(11) UNSIGNED'],
         ],
     ];
     // @codingStandardsIgnoreStart
@@ -56,7 +60,7 @@ class AeucCMSRoleEmailEntity extends ObjectModel
      */
     public static function truncate()
     {
-        $sql = 'TRUNCATE `'._DB_PREFIX_.AeucCMSRoleEmailEntity::$definition['table'].'`';
+        $sql = 'TRUNCATE `'._DB_PREFIX_.static::$definition['table'].'`';
 
         return Db::getInstance()->execute($sql);
     }
@@ -64,17 +68,18 @@ class AeucCMSRoleEmailEntity extends ObjectModel
     /**
      * Return the complete list of cms_role_ids associated
      *
+     * @param int $idCmsRole
+     *
      * @return array|false
-     * @throws PrestaShopDatabaseException
      */
     public static function getIdEmailFromCMSRoleId($idCmsRole)
     {
-        $sql = '
-		SELECT `id_mail`
-		FROM `'._DB_PREFIX_.AeucCMSRoleEmailEntity::$definition['table'].'`
-		WHERE `id_cms_role` = '.(int) $idCmsRole;
-
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_mail`')
+                ->from(bqSQL(static::$definition['table']))
+                ->where('`id_cms_role` = '.(int) $idCmsRole)
+        );
     }
 
     /**
@@ -85,21 +90,25 @@ class AeucCMSRoleEmailEntity extends ObjectModel
      */
     public static function getAll()
     {
-        $sql = '
-		SELECT *
-		FROM `'._DB_PREFIX_.AeucCMSRoleEmailEntity::$definition['table'].'`';
-
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from(bqSQL(static::$definition['table']))
+        );
     }
 
+    /**
+     * @param int $idMail
+     *
+     * @return array|false|null|PDOStatement
+     */
     public static function getCMSRoleIdsFromIdMail($idMail)
     {
-        $sql = '
-		SELECT DISTINCT(`id_cms_role`)
-		FROM `'._DB_PREFIX_.AeucCMSRoleEmailEntity::$definition['table'].'`
-		WHERE `id_mail` = '.(int) $idMail;
-
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('DISTINCT `id_cms_role`')
+                ->from(bqSQL(static::$definition['table']))
+                ->where('`id_mail` = '.(int) $idMail)
+        );
     }
-
 }

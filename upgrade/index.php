@@ -23,38 +23,12 @@
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-if (!defined('_TB_VERSION_')) {
-    exit;
-}
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
 
-/**
- * Class AdminAEUCController
- *
- * @since 1.0.0
- */
-class AdminAEUCController extends ModuleAdminController
-{
-    /**
-     * AdminAEUCController constructor.
-     */
-    public function __construct()
-    {
-        $this->bootstrap = true;
-        $this->display = 'view';
-        $this->meta_title = $this->l('Advanced EU Compliance');
-        parent::__construct();
-        if (!$this->module->active) {
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminHome'));
-        }
-    }
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
-    /**
-     * Render view
-     *
-     * @return string
-     */
-    public function renderView()
-    {
-        return parent::renderView();
-    }
-}
+header('Location: ../');
+exit;

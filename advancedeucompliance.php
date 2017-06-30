@@ -49,13 +49,13 @@ class Advancedeucompliance extends Module
 
     const LEGAL_SHIP_PAY = 'LEGAL_SHIP_PAY';
     const DEFAULT_PS_PRODUCT_WEIGHT_PRECISION = 2;
-    protected $config_form = false;
-    protected $entity_manager;
+    protected $configForm = false;
+    protected $entityManager;
     protected $filesystem;
     protected $emails;
     protected $errors;
     protected $warnings;
-    protected $missing_templates = [];
+    protected $missingTemplates = [];
     // @codingStandardsIgnoreEnd
 
     /**
@@ -75,7 +75,7 @@ class Advancedeucompliance extends Module
 
         $this->name = 'advancedeucompliance';
         $this->tab = 'administration';
-        $this->version = '3.0.1';
+        $this->version = '3.1.0';
         $this->author = 'thirty bees';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -83,7 +83,7 @@ class Advancedeucompliance extends Module
         parent::__construct();
 
         /* Register dependencies to module */
-        $this->entity_manager = $entityManager;
+        $this->entityManager = $entityManager;
         $this->filesystem = $fs;
         $this->emails = $email;
 
@@ -135,15 +135,13 @@ class Advancedeucompliance extends Module
         $state = true;
 
         // Create module's table
-        $sql = require __DIR__.'/install/sql_install.php';
-        foreach ($sql as $s) {
-            $state &= Db::getInstance()->execute($s);
-        }
+        AeucCMSRoleEmailEntity::createDatabase();
+        AeucEmailEntity::createDatabase();
 
         // Fill in CMS ROLE
         $rolesArray = $this->getCMSRoles();
         $roles = array_keys($rolesArray);
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
 
         foreach ($roles as $role) {
             if (!$cmsRoleRepository->findOneByName($role)) {
@@ -215,7 +213,6 @@ class Advancedeucompliance extends Module
         $return = true;
 
         foreach ($hooks as $hookName => $hook) {
-
             if (Hook::getIdByName($hookName)) {
                 continue;
             }
@@ -262,7 +259,6 @@ class Advancedeucompliance extends Module
         $alreadyHookedModulesIds = array_keys(Hook::getModulesFromHook($displayPaymentEuHookId));
 
         foreach ($modulesToCheck as $moduleName) {
-
             if (($module = Module::getInstanceByName($moduleName)) !== false &&
                 Module::isInstalled($moduleName) &&
                 $module->active &&
@@ -290,7 +286,7 @@ class Advancedeucompliance extends Module
         $shoppingCartTextBefore = [];
         $shoppingCartTextAfter = [];
 
-        $langsRepository = $this->entity_manager->getRepository('Language');
+        $langsRepository = $this->entityManager->getRepository('Language');
         $langs = $langsRepository->findAll();
 
         foreach ($langs as $lang) {
@@ -344,7 +340,6 @@ class Advancedeucompliance extends Module
     {
         $stafModule = Module::getInstanceByName('sendtoafriend');
         if ($stafModule) {
-
             if ((bool) $isOptionActive) {
                 Configuration::updateValue('AEUC_FEAT_TELL_A_FRIEND', true);
                 if ($stafModule->isEnabledForShopContext() === false) {
@@ -423,7 +418,7 @@ class Advancedeucompliance extends Module
 
         foreach ($this->getRequiredThemeTemplate() as $requiredTpl) {
             if (!is_file(_PS_THEME_DIR_.$requiredTpl)) {
-                $this->missing_templates[] = $requiredTpl;
+                $this->missingTemplates[] = $requiredTpl;
                 $return = false;
             }
         }
@@ -457,7 +452,7 @@ class Advancedeucompliance extends Module
     protected function processAeucLabelRevocationTOS($isOptionActive)
     {
         // Check first if LEGAL_REVOCATION CMS Role has been set before doing anything here
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
         $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_REVOCATION);
         $cmsRoles = $this->getCMSRoles();
 
@@ -511,7 +506,7 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $isOptionActive
+     * @param bool $isOptionActive
      *
      * @since 1.0.0
      */
@@ -521,14 +516,14 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $isOptionActive
+     * @param bool $isOptionActive
      *
      * @since 1.0.0
      */
     protected function processAeucLabelShippingIncExc($isOptionActive)
     {
         // Check first if LEGAL_SHIP_PAY CMS Role has been set before doing anything here
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
         $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_SHIP_PAY);
         $cmsRoles = $this->getCMSRoles();
 
@@ -553,7 +548,7 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $isOptionActive
+     * @param bool $isOptionActive
      *
      * @since 1.0.0
      */
@@ -569,7 +564,7 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $isOptionActive
+     * @param bool $isOptionActive
      *
      * @since 1.0.0
      */
@@ -617,10 +612,11 @@ class Advancedeucompliance extends Module
         // Remove roles
         $rolesArray = $this->getCMSRoles();
         $roles = array_keys($rolesArray);
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
         $cleaned = true;
 
         foreach ($roles as $role) {
+            /** @var CMSRole $cmsRoleTmp */
             $cmsRoleTmp = $cmsRoleRepository->findOneByName($role);
             if ($cmsRoleTmp) {
                 $cleaned &= $cmsRoleTmp->delete();
@@ -677,7 +673,7 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $param
+     * @param array $param
      *
      * @return string
      *
@@ -686,8 +682,7 @@ class Advancedeucompliance extends Module
     public function hookDisplayCartTotalPriceLabel($param)
     {
         $smartyVars = [];
-        if ((bool) Configuration::get('AEUC_LABEL_TAX_INC_EXC') === true) {
-
+        if (Configuration::get('AEUC_LABEL_TAX_INC_EXC')) {
             $customerDefaultGroupId = (int) $this->context->customer->id_default_group;
             $customerDefaultGroup = new Group($customerDefaultGroupId);
 
@@ -715,13 +710,11 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $param
-     *
      * @return array|null
      *
      * @since 1.0.0
      */
-    public function hookAdvancedPaymentOptions($param)
+    public function hookAdvancedPaymentOptions()
     {
         $legacyOptions = Hook::exec('displayPaymentEU', [], null, true);
         $newOptions = [];
@@ -790,7 +783,7 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $param
+     * @param array $param
      *
      * @since 1.0.0
      */
@@ -823,24 +816,24 @@ class Advancedeucompliance extends Module
             $tmpCmsRoleList[] = $cmsRoleId['id_cms_role'];
         }
 
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
         $cmsRoles = $cmsRoleRepository->findByIdCmsRole($tmpCmsRoleList);
         if (!$cmsRoles) {
             return;
         }
 
-        $cmsRepo = $this->entity_manager->getRepository('CMS');
+        $cmsRepo = $this->entityManager->getRepository('CMS');
         $cmsContents = [];
 
         foreach ($cmsRoles as $cmsRole) {
-            $cms_page = $cmsRepo->i10nFindOneById((int) $cmsRole->id_cms, $idLang, $this->context->shop->id);
+            $cmsPage = $cmsRepo->i10nFindOneById((int) $cmsRole->id_cms, $idLang, $this->context->shop->id);
 
-            if (!isset($cms_page->content)) {
+            if (!isset($cmsPage->content)) {
                 continue;
             }
 
-            $cmsContents[] = $cms_page->content;
-            $param['template_txt'] .= strip_tags($cms_page->content, true);
+            $cmsContents[] = $cmsPage->content;
+            $param['template_txt'] .= strip_tags($cmsPage->content, true);
         }
 
         $this->context->smarty->assign(['cms_contents' => $cmsContents]);
@@ -849,11 +842,9 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $param
-     *
      * @since 1.0.0
      */
-    public function hookHeader($param)
+    public function hookHeader()
     {
         $cssRequired = [
             'index',
@@ -872,7 +863,7 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $param
+     * @param array $param
      *
      * @return string
      *
@@ -881,9 +872,9 @@ class Advancedeucompliance extends Module
     public function hookOverrideTOSDisplay($param)
     {
         $hasTosOverrideOpt = (bool) Configuration::get('AEUC_LABEL_REVOCATION_TOS');
-        $cmsRepository = $this->entity_manager->getRepository('CMS');
+        $cmsRepository = $this->entityManager->getRepository('CMS');
         // Check first if LEGAL_REVOCATION CMS Role is set
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
         $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_REVOCATION);
 
         // Check if cart has virtual product
@@ -968,13 +959,11 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param $params
-     *
      * @return string
      *
      * @since 1.0.0
      */
-    public function hookDisplayBeforeShoppingCartBlock($params)
+    public function hookDisplayBeforeShoppingCartBlock()
     {
         if ($this->context->controller instanceof OrderOpcController || property_exists($this->context->controller, 'step') && $this->context->controller->step == 3) {
             $cartText = Configuration::get('AEUC_SHOPPING_CART_TEXT_BEFORE', $this->context->language->id);
@@ -985,8 +974,15 @@ class Advancedeucompliance extends Module
                 return $this->display(__FILE__, 'displayShoppingCartBeforeBlock.tpl');
             }
         }
+
+        return '';
     }
 
+    /**
+     * @param array $params
+     *
+     * @return string
+     */
     public function hookDisplayAfterShoppingCartBlock($params)
     {
         $cartText = Configuration::get('AEUC_SHOPPING_CART_TEXT_AFTER', Context::getContext()->language->id);
@@ -1000,12 +996,14 @@ class Advancedeucompliance extends Module
 
             return $this->display(__FILE__, 'displayShoppingCartAfterBlock.tpl');
         }
+
+        return '';
     }
 
     /**
-     * @param $param
+     * @param array $param
      *
-     * @return string|void
+     * @return string
      *
      * @since 1.0.0
      */
@@ -1018,7 +1016,7 @@ class Advancedeucompliance extends Module
         $product = $param['product'];
 
         if (is_array($product)) {
-            $productRepository = $this->entity_manager->getRepository('Product');
+            $productRepository = $this->entityManager->getRepository('Product');
             $product = $productRepository->findOne((int) $product['id_product']);
         }
         if (!Validate::isLoadedObject($product)) {
@@ -1050,7 +1048,7 @@ class Advancedeucompliance extends Module
                     }
                 }
 
-                return;
+                return '';
             }
         }
 
@@ -1067,8 +1065,7 @@ class Advancedeucompliance extends Module
             $smartyVars['price'] = [];
             $needShippingLabel = true;
 
-            if ((bool) Configuration::get('AEUC_LABEL_TAX_INC_EXC') === true) {
-
+            if (Configuration::get('AEUC_LABEL_TAX_INC_EXC')) {
                 $customerDefaultGroupId = (int) $this->context->customer->id_default_group;
                 $customerDefaultGroup = new Group($customerDefaultGroupId);
 
@@ -1087,8 +1084,8 @@ class Advancedeucompliance extends Module
             }
             if ((bool) Configuration::get('AEUC_LABEL_SHIPPING_INC_EXC') === true && $needShippingLabel === true) {
                 if (!$product->is_virtual) {
-                    $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
-                    $cmsRepository = $this->entity_manager->getRepository('CMS');
+                    $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
+                    $cmsRepository = $this->entityManager->getRepository('CMS');
                     $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_SHIP_PAY);
 
                     if (isset($cmsPageAssociated->id_cms) && $cmsPageAssociated->id_cms != 0) {
@@ -1148,6 +1145,8 @@ class Advancedeucompliance extends Module
 
             return $this->dumpHookDisplayProductPriceBlock($smartyVars);
         }
+
+        return '';
     }
 
     /**
@@ -1175,21 +1174,12 @@ class Advancedeucompliance extends Module
         $successBand = $this->_postProcess();
         if ((bool) Configuration::get('AEUC_IS_THEME_COMPLIANT') === false) {
             $missing = '<ul>';
-            foreach ($this->missing_templates as $missingTpl) {
+            foreach ($this->missingTemplates as $missingTpl) {
                 $missing .= '<li>'.$missingTpl.' '.$this->l('missing').'</li>';
             }
             $missing .= '</ul><br/>';
-            $discardWarningLink = $this->context->link->getAdminLink('AdminModules', false).
-                '&configure='.$this->name.
-                '&tab_module='.$this->tab.
-                '&module_name='.$this->name.
-                '&discard_tpl_warn=1'.
-                '&token='.Tools::getAdminTokenLite('AdminModules');
-            $missing .= '<a href="'.$discardWarningLink.'" type="button">'.$this->l(
-                    'Hide this, I know what I am doing.',
-                    'advancedeucompliance'
-                ).
-                '</a>';
+            $discardWarningLink = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name.'&discard_tpl_warn=1'.'&token='.Tools::getAdminTokenLite('AdminModules');
+            $missing .= '<a href="'.$discardWarningLink.'" type="button">'.$this->l('Hide this, I know what I am doing.', 'advancedeucompliance').'</a>';
             $themeWarning = $this->displayWarning(
                 $this->l(
                     'It seems that your current theme is not compatible with this module, some mandatory templates are missing. It is possible some options may not work as expected.',
@@ -1291,12 +1281,9 @@ class Advancedeucompliance extends Module
         if ($hasProcessedSomething) {
             $this->emptyTemplatesCache();
 
-            return (count($this->errors) ? $this->displayError($this->errors) : '').
-                (count($this->warnings) ? $this->displayWarning($this->warnings) : '').
-                $this->displayConfirmation($this->l('Settings saved successfully!', 'advancedeucompliance'));
+            return (count($this->errors) ? $this->displayError($this->errors) : '').(count($this->warnings) ? $this->displayWarning($this->warnings) : '').$this->displayConfirmation($this->l('Settings saved successfully!', 'advancedeucompliance'));
         } else {
-            return (count($this->errors) ? $this->displayError($this->errors) : '').
-                (count($this->warnings) ? $this->displayWarning($this->warnings) : '').'';
+            return (count($this->errors) ? $this->displayError($this->errors) : '').(count($this->warnings) ? $this->displayWarning($this->warnings) : '').'';
         }
     }
 
@@ -1359,13 +1346,13 @@ class Advancedeucompliance extends Module
         }
     }
 
-    protected function processAeucShoppingCartText(array $i10n_inputs)
+    protected function processAeucShoppingCartText(array $i10NInputs)
     {
-        if (isset($i10n_inputs['AEUC_SHOPPING_CART_TEXT_BEFORE'])) {
-            Configuration::updateValue('AEUC_SHOPPING_CART_TEXT_BEFORE', $i10n_inputs['AEUC_SHOPPING_CART_TEXT_BEFORE']);
+        if (isset($i10NInputs['AEUC_SHOPPING_CART_TEXT_BEFORE'])) {
+            Configuration::updateValue('AEUC_SHOPPING_CART_TEXT_BEFORE', $i10NInputs['AEUC_SHOPPING_CART_TEXT_BEFORE']);
         }
-        if (isset($i10n_inputs['AEUC_SHOPPING_CART_TEXT_AFTER'])) {
-            Configuration::updateValue('AEUC_SHOPPING_CART_TEXT_AFTER', $i10n_inputs['AEUC_SHOPPING_CART_TEXT_AFTER']);
+        if (isset($i10NInputs['AEUC_SHOPPING_CART_TEXT_AFTER'])) {
+            Configuration::updateValue('AEUC_SHOPPING_CART_TEXT_AFTER', $i10NInputs['AEUC_SHOPPING_CART_TEXT_AFTER']);
         }
     }
 
@@ -1880,15 +1867,14 @@ class Advancedeucompliance extends Module
     protected function renderFormLegalContentManager()
     {
         $cmsRolesAeuc = $this->getCMSRoles();
-        $cmsRepository = $this->entity_manager->getRepository('CMS');
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRepository = $this->entityManager->getRepository('CMS');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
         $cmsRoles = $cmsRoleRepository->findByName(array_keys($cmsRolesAeuc));
         $cmsRolesAssoc = [];
         $idLang = Context::getContext()->employee->id_lang;
         $idShop = Context::getContext()->shop->id;
 
         foreach ($cmsRoles as $cmsRole) {
-
             if ((int) $cmsRole->id_cms > 0) {
                 $cmsEntity = $cmsRepository->findOne((int) $cmsRole->id_cms);
                 $assocCmsName = $cmsEntity->meta_title[(int) $idLang];
@@ -1925,7 +1911,7 @@ class Advancedeucompliance extends Module
     protected function renderFormEmailAttachmentsManager()
     {
         $cmsRolesAeuc = $this->getCMSRoles();
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
         $cmsRolesAssociated = $cmsRoleRepository->getCMSRolesAssociated();
         $legalOptions = [];
         $cleanedMailsNames = [];
@@ -1988,11 +1974,11 @@ class Advancedeucompliance extends Module
         AeucCMSRoleEmailEntity::truncate();
 
         foreach ($jsonAttachAssoc as $assoc) {
-            $assoc_obj = new AeucCMSRoleEmailEntity();
-            $assoc_obj->id_mail = $assoc->id_mail;
-            $assoc_obj->id_cms_role = $assoc->id_cms_role;
+            $assocObj = new AeucCMSRoleEmailEntity();
+            $assocObj->id_mail = $assoc->id_mail;
+            $assocObj->id_cms_role = $assoc->id_cms_role;
 
-            if (!$assoc_obj->save()) {
+            if (!$assocObj->save()) {
                 $this->errors[] = $this->l('Failed to associate CMS content with an email template.', 'advancedeucompliance');
             }
         }
@@ -2011,11 +1997,12 @@ class Advancedeucompliance extends Module
     protected function processAeucLegalContentManager()
     {
         $postedValues = Tools::getAllValues();
-        $cmsRoleRepository = $this->entity_manager->getRepository('CMSRole');
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
 
         foreach ($postedValues as $keyName => $assocCmsId) {
             if (strpos($keyName, 'CMSROLE_') !== false) {
                 $explodedKeyName = explode('_', $keyName);
+                /** @var CMSRole $cmsRole */
                 $cmsRole = $cmsRoleRepository->findOne((int) $explodedKeyName[1]);
                 $cmsRole->id_cms = (int) $assocCmsId;
                 $cmsRole->update();
