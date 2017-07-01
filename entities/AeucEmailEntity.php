@@ -78,7 +78,7 @@ class AeucEmailEntity extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
-                ->select('`id_mail`')
+                ->select('`'.bqSQL(static::$definitionp['primary']).'`')
                 ->from(bqSQL(static::$definition['table']))
                 ->where('`filename` = \''.pSQL($tplName).'\'')
         );
