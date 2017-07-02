@@ -87,9 +87,9 @@ class Advancedeucompliance extends Module
         $this->filesystem = $fs;
         $this->emails = $email;
 
-        $this->displayName = $this->l('Advanced EU Compliance');
-        $this->description = $this->l('This module helps European merchants comply with applicable e-commerce laws.');
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
+        $this->displayName = $this->l('Advanced EU Compliance', 'advancedeucompliance');
+        $this->description = $this->l('This module helps European merchants comply with applicable e-commerce laws.', 'advancedeucompliance');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?', 'advancedeucompliance');
 
         /* Init errors var */
         $this->errors = [];
@@ -1873,23 +1873,23 @@ class Advancedeucompliance extends Module
                             'query' => [
                                 [
                                     'id'   => 0,
-                                    'name' => $this->l('Same as the `round type` setting'),
+                                    'name' => $this->l('Same as the `round type` setting', 'advancedeucompliance'),
                                 ],
                                 [
                                     'id'   => Order::ROUND_ITEM,
-                                    'name' => $this->l('Round on each item'),
+                                    'name' => $this->l('Round on each item', 'advancedeucompliance'),
                                 ],
                                 [
                                     'id'   => Order::ROUND_LINE,
-                                    'name' => $this->l('Round on each line'),
+                                    'name' => $this->l('Round on each line', 'advancedeucompliance'),
                                 ],
                                 [
                                     'id'   => Order::ROUND_TOTAL,
-                                    'name' => $this->l('Round on the total'),
+                                    'name' => $this->l('Round on the total', 'advancedeucompliance'),
                                 ],
                                 [
                                     'id'   => 4,
-                                    'name' => $this->l('No rounding'),
+                                    'name' => $this->l('No rounding', 'advancedeucompliance'),
                                 ],
                             ],
                             'name'  => 'name',
