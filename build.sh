@@ -7,10 +7,11 @@ FILES+=("init.php")
 FILES+=("logo.gif")
 FILES+=("logo.png")
 FILES+=("Readme.md")
+FILES+=("classes/**")
 FILES+=("controllers/**")
-FILES+=("entities/**")
 FILES+=("install/**")
 FILES+=("translations/**")
+FILES+=("vendor/**")
 FILES+=("views/**")
 
 

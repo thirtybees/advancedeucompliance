@@ -23,36 +23,71 @@
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+namespace AdvancedEUComplianceModule;
+
+use Db;
+use DbQuery;
+use ObjectModel;
+use PrestaShopDatabaseException;
+
 if (!defined('_TB_VERSION_')) {
     exit;
 }
 
 /**
- * Class AeucEmailEntity
+ * Class AeucCMSRoleEmailEntity
  *
  * @since 1.0.0
  */
-class AeucEmailEntity extends ObjectModel
+class AeucCMSRoleEmailEntity extends ObjectModel
 {
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table'   => 'aeuc_email',
-        'primary' => 'id_aeuc_email',
+        'table'   => 'aeuc_cmsrole_email',
+        'primary' => 'id_aeuc_cmsrole_email',
         'fields'  => [
-            'filename'     => ['type' => self::TYPE_STRING, 'required' => true, 'db_type' => 'VARCHAR(64)', 'size' => 64],
-            'display_name' => ['type' => self::TYPE_STRING, 'required' => true, 'db_type' => 'VARCHAR(64)', 'size' => 64],
+            'id_mail'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true, 'db_type' => 'INT(11) UNSIGNED'],
+            'id_cms_role' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true, 'db_type' => 'INT(11) UNSIGNED'],
         ],
     ];
     // @codingStandardsIgnoreStart
-    /** @var integer id_mail */
+    /** @var string name */
+    public $id_cms_role;
+    /** @var integer id_cms */
     public $id_mail;
-    /** @var string filename */
-    public $filename;
-    /** @var string display_name */
-    public $display_name;
     // @codingStandardsIgnoreEnd
+
+    /**
+     * Truncate Table
+     *
+     * @return array|false
+     * @throws PrestaShopDatabaseException
+     */
+    public static function truncate()
+    {
+        $sql = 'TRUNCATE `'._DB_PREFIX_.static::$definition['table'].'`';
+
+        return Db::getInstance()->execute($sql);
+    }
+
+    /**
+     * Return the complete list of cms_role_ids associated
+     *
+     * @param int $idCmsRole
+     *
+     * @return array|false
+     */
+    public static function getIdEmailFromCMSRoleId($idCmsRole)
+    {
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_mail`')
+                ->from(bqSQL(static::$definition['table']))
+                ->where('`id_cms_role` = '.(int) $idCmsRole)
+        );
+    }
 
     /**
      * Return the complete email collection from DB
@@ -70,17 +105,17 @@ class AeucEmailEntity extends ObjectModel
     }
 
     /**
-     * @param string $tplName
+     * @param int $idMail
      *
-     * @return array|bool|null|object
+     * @return array
      */
-    public static function getMailIdFromTplFilename($tplName)
+    public static function getCMSRoleIdsFromIdMail($idMail)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return (array) Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('`'.bqSQL(static::$definition['primary']).'`')
+                ->select('DISTINCT `id_cms_role`')
                 ->from(bqSQL(static::$definition['table']))
-                ->where('`filename` = \''.pSQL($tplName).'\'')
+                ->where('`id_mail` = '.(int) $idMail)
         );
     }
 }

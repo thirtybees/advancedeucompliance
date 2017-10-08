@@ -23,13 +23,12 @@
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use AdvancedEUComplianceModule\AeucCMSRoleEmailEntity;
+use AdvancedEUComplianceModule\AeucEmailEntity;
+
 if (!defined('_TB_VERSION_')) {
     exit;
 }
-
-/* Include required entities */
-include_once __DIR__.'/entities/AeucCMSRoleEmailEntity.php';
-include_once __DIR__.'/entities/AeucEmailEntity.php';
 
 /**
  * Class Advancedeucompliance
@@ -710,79 +709,6 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @return array|null
-     *
-     * @since 1.0.0
-     */
-    public function hookAdvancedPaymentOptions()
-    {
-        $legacyOptions = Hook::exec('displayPaymentEU', [], null, true);
-        $newOptions = [];
-
-        Media::addJsDef(
-            [
-                'aeuc_tos_err_str' => Tools::htmlentitiesUTF8(
-                    $this->l(
-                        'You must agree to our Terms of Service before going any further!',
-                        'advancedeucompliance'
-                    )
-                ),
-            ]
-        );
-        Media::addJsDef(
-            [
-                'aeuc_submit_err_str' => Tools::htmlentitiesUTF8(
-                    $this->l(
-                        'Something went wrong. If the problem persists, please contact us.',
-                        'advancedeucompliance'
-                    )
-                ),
-            ]
-        );
-        Media::addJsDef(
-            [
-                'aeuc_no_pay_err_str' => Tools::htmlentitiesUTF8(
-                    $this->l(
-                        'Select a payment option first.',
-                        'advancedeucompliance'
-                    )
-                ),
-            ]
-        );
-        Media::addJsDef(
-            [
-                'aeuc_virt_prod_err_str' => Tools::htmlentitiesUTF8(
-                    $this->l(
-                        'Please check "Revocation of virtual products" box first !',
-                        'advancedeucompliance'
-                    )
-                ),
-            ]
-        );
-        if ($legacyOptions) {
-            foreach ($legacyOptions as $moduleName => $legacyOption) {
-                if (!$legacyOption) {
-                    continue;
-                }
-
-                foreach (Core_Business_Payment_PaymentOption::convertLegacyOption($legacyOption) as $option) {
-                    $option->setModuleName($moduleName);
-                    $toBeCleaned = $option->getForm();
-                    if ($toBeCleaned) {
-                        $cleaned = str_replace('@hiddenSubmit', '', $toBeCleaned);
-                        $option->setForm($cleaned);
-                    }
-                    $newOptions[] = $option;
-                }
-            }
-
-            return $newOptions;
-        }
-
-        return null;
-    }
-
-    /**
      * @param array $param
      *
      * @since 1.0.0
@@ -1015,7 +941,7 @@ class Advancedeucompliance extends Module
     public function hookDisplayProductPriceBlock($param)
     {
         if (!isset($param['product']) || !isset($param['type'])) {
-            return;
+            return '';
         }
 
         $product = $param['product'];
@@ -1025,7 +951,7 @@ class Advancedeucompliance extends Module
             $product = $productRepository->findOne((int) $product['id_product']);
         }
         if (!Validate::isLoadedObject($product)) {
-            return;
+            return '';
         }
 
         $smartyVars = [];
@@ -1925,8 +1851,8 @@ class Advancedeucompliance extends Module
             $listIdMailAssoc = AeucCMSRoleEmailEntity::getIdEmailFromCMSRoleId((int) $role->id);
             $cleanList = [];
 
-            foreach ($listIdMailAssoc as $listIdMailAssoc) {
-                $cleanList[] = $listIdMailAssoc['id_mail'];
+            foreach ($listIdMailAssoc as $listIdMailAssocItem) {
+                $cleanList[] = $listIdMailAssocItem['id_mail'];
             }
 
             $legalOptions[$role->name] = [
