@@ -411,9 +411,8 @@ class Advancedeucompliance extends Module
     public function uninstallTables()
     {
         $state = true;
-        $sql = require dirname(__FILE__).'/install/sql_install.php';
-        foreach ($sql as $name => $v) {
-            $state &= Db::getInstance()->execute('DROP TABLE IF EXISTS '.$name);
+        foreach ([AeucCMSRoleEmailEntity::$definition['table'], AeucEmailEntity::$definition['table']] as $name) {
+            $state &= Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.bqSQL($name).'`');
         }
 
         return $state;
