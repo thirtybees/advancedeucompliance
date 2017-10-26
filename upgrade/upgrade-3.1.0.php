@@ -29,8 +29,15 @@ if (!defined('_TB_VERSION_')) {
 
 function upgrade_module_3_1_0($module)
 {
-    Db::getInstance()->execute('ALTER IGNORE TABLE `'._DB_PREFIX_.'aeuc_email` CHANGE `id_mail` id_aeuc_email INT(11) UNSIGNED NOT NULL AUTO_INCREMENT');
-    Db::getInstance()->execute('ALTER IGNORE TABLE `'._DB_PREFIX_.'aeuc_cmsrole_email` CHANGE `id` id_aeuc_cmsrole_email INT(11) UNSIGNED NOT NULL AUTO_INCREMENT');
+    try {
+        Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'aeuc_email` CHANGE `id_mail` id_aeuc_email INT(11) UNSIGNED NOT NULL AUTO_INCREMENT');
+    } catch (PrestaShopDatabaseException $e) {
+    }
+
+    try {
+        Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'aeuc_cmsrole_email` CHANGE `id` id_aeuc_cmsrole_email INT(11) UNSIGNED NOT NULL AUTO_INCREMENT');
+    } catch (PrestaShopDatabaseException $e) {
+    }
 
     return true;
 }
