@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 CWD_BASENAME=${PWD##*/}
 
+composer install --no-dev
+composer -o dump-autoload
+
 FILES+=("${CWD_BASENAME}.php")
 FILES+=("index.php")
 FILES+=("init.php")
