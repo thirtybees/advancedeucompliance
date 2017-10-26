@@ -51,7 +51,7 @@
                         <th class="center fixed-width-xs">
                             <span class="title_box">
                                  <input id="selectall_opt_{$option.id|intval}" type="checkbox"/>
-                                {$option.name|escape:'htmlall'}
+                                {$option.name|escape:'htmlall':'UTF-8'}
                             </span>
                         </th>
                     {/foreach}
@@ -60,7 +60,7 @@
                 <tbody>
                 {foreach from=$mails_available item=mail}
                     <tr>
-                        <td><input id="mail_{$mail.id_aeuc_email|intval}" class="select-all-for-mail" type="checkbox"/></th>&nbsp;{$mail.display_name|escape:'htmlall'}</td>
+                        <td><input id="mail_{$mail.id_aeuc_email|intval}" class="select-all-for-mail" type="checkbox"/></th>&nbsp;{$mail.display_name|escape:'htmlall':'UTF-8'}</td>
                         {foreach from=$legal_options item=option}
                             <td class="center">
                                 <input name="attach_{$mail.id_aeuc_email|intval}_{$option.id|intval}" id="attach_{$mail.id_aeuc_email|intval}_{$option.id|intval}" type="checkbox"
