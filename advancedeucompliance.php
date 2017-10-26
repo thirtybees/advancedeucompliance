@@ -73,7 +73,6 @@ class Advancedeucompliance extends Module
         Core_Foundation_FileSystem_FileSystem $fs,
         Core_Business_Email_EmailLister $email
     ) {
-
         $this->name = 'advancedeucompliance';
         $this->tab = 'administration';
         $this->version = '3.1.0';
@@ -165,26 +164,6 @@ class Advancedeucompliance extends Module
         }
 
         return $state;
-    }
-
-    /**
-     * Get CMS roles
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    protected function getCMSRoles()
-    {
-        return [
-            Advancedeucompliance::LEGAL_NOTICE          => $this->l('Legal notice', 'advancedeucompliance'),
-            Advancedeucompliance::LEGAL_CONDITIONS      => $this->l('Terms of Service (ToS)', 'advancedeucompliance'),
-            Advancedeucompliance::LEGAL_REVOCATION      => $this->l('Revocation terms', 'advancedeucompliance'),
-            Advancedeucompliance::LEGAL_REVOCATION_FORM => $this->l('Revocation form', 'advancedeucompliance'),
-            Advancedeucompliance::LEGAL_PRIVACY         => $this->l('Privacy', 'advancedeucompliance'),
-            Advancedeucompliance::LEGAL_ENVIRONMENTAL   => $this->l('Environmental notice', 'advancedeucompliance'),
-            Advancedeucompliance::LEGAL_SHIP_PAY        => $this->l('Shipping and payment', 'advancedeucompliance'),
-        ];
     }
 
     /**
@@ -333,82 +312,6 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param bool $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucFeatTellAFriend($isOptionActive)
-    {
-        $stafModule = Module::getInstanceByName('sendtoafriend');
-        if ($stafModule) {
-            if ((bool) $isOptionActive) {
-                Configuration::updateValue('AEUC_FEAT_TELL_A_FRIEND', true);
-                if ($stafModule->isEnabledForShopContext() === false) {
-                    $stafModule->enable();
-                }
-            } elseif (!(bool) $isOptionActive) {
-                Configuration::updateValue('AEUC_FEAT_TELL_A_FRIEND', false);
-                if ($stafModule->isEnabledForShopContext() === true) {
-                    $stafModule->disable();
-                }
-            }
-        }
-    }
-
-    /**
-     * @param $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucFeatReorder($isOptionActive)
-    {
-
-        if ((bool) $isOptionActive) {
-            Configuration::updateValue('PS_DISALLOW_HISTORY_REORDERING', false);
-        } else {
-            Configuration::updateValue('PS_DISALLOW_HISTORY_REORDERING', true);
-        }
-    }
-
-    /**
-     * @param bool $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucFeatAdvPaymentApi($isOptionActive)
-    {
-        $this->refreshThemeStatus();
-
-        if ((bool) $isOptionActive) {
-            if ((bool) Configuration::get('AEUC_IS_THEME_COMPLIANT')) {
-                Configuration::updateValue('PS_ADVANCED_PAYMENT_API', true);
-                Configuration::updateValue('AEUC_FEAT_ADV_PAYMENT_API', true);
-            } else {
-                $this->errors[] = $this->l(
-                    'It is not possible to enable the "Advanced Checkout Page" as your theme is not compatible with this option.',
-                    'advancedeucompliance'
-                );
-            }
-        } else {
-            Configuration::updateValue('PS_ADVANCED_PAYMENT_API', false);
-            Configuration::updateValue('AEUC_FEAT_ADV_PAYMENT_API', false);
-        }
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    private function refreshThemeStatus()
-    {
-        if ((bool) Configuration::get('AEUC_IS_THEME_COMPLIANT') === false) {
-            $reCheck = $this->isThemeCompliant();
-            if ($reCheck === true) {
-                Configuration::updateValue('AEUC_IS_THEME_COMPLIANT', (bool) $reCheck);
-            }
-        }
-    }
-
-    /**
      * @return bool
      *
      * @since 1.0.0
@@ -443,148 +346,6 @@ class Advancedeucompliance extends Module
             'order-payment-advanced.tpl',
             'shopping-cart-advanced.tpl',
         ];
-    }
-
-    /**
-     * @param bool $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucLabelRevocationTOS($isOptionActive)
-    {
-        // Check first if LEGAL_REVOCATION CMS Role has been set before doing anything here
-        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
-        $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_REVOCATION);
-        $cmsRoles = $this->getCMSRoles();
-
-        if ((bool) $isOptionActive) {
-            if (!$cmsPageAssociated instanceof CMSRole || (int) $cmsPageAssociated->id_cms == 0) {
-                $this->errors[] =
-                    sprintf(
-                        $this->l(
-                            '\'Revocation Terms within ToS\' label cannot be activated unless you associate "%s" role with a CMS Page.',
-                            'advancedeucompliance'
-                        ),
-                        (string) $cmsRoles[Advancedeucompliance::LEGAL_REVOCATION]
-                    );
-
-                return;
-            }
-            Configuration::updateValue('AEUC_LABEL_REVOCATION_TOS', true);
-        } else {
-            Configuration::updateValue('AEUC_LABEL_REVOCATION_TOS', false);
-        }
-    }
-
-    /**
-     * This hook is present to maintain backward compatibility
-     *
-     * @param $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucLabelRevocationVP($isOptionActive)
-    {
-        if ((bool) $isOptionActive) {
-            Configuration::updateValue('AEUC_LABEL_REVOCATION_VP', true);
-        } else {
-            Configuration::updateValue('AEUC_LABEL_REVOCATION_VP', false);
-        }
-    }
-
-    /**
-     * @param $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucLabelSpecificPrice($isOptionActive)
-    {
-        if ((bool) $isOptionActive) {
-            Configuration::updateValue('AEUC_LABEL_SPECIFIC_PRICE', true);
-        } else {
-            Configuration::updateValue('AEUC_LABEL_SPECIFIC_PRICE', false);
-        }
-    }
-
-    /**
-     * @param bool $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucLabelTaxIncExc($isOptionActive)
-    {
-        Configuration::updateValue('AEUC_LABEL_TAX_INC_EXC', (bool) $isOptionActive);
-    }
-
-    /**
-     * @param bool $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucLabelShippingIncExc($isOptionActive)
-    {
-        // Check first if LEGAL_SHIP_PAY CMS Role has been set before doing anything here
-        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
-        $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_SHIP_PAY);
-        $cmsRoles = $this->getCMSRoles();
-
-        if ((bool) $isOptionActive) {
-            if (!$cmsPageAssociated instanceof CMSRole || (int) $cmsPageAssociated->id_cms === 0) {
-                $this->errors[] =
-                    sprintf(
-                        $this->l(
-                            'Shipping fees label cannot be activated unless you associate "%s" role with a CMS Page',
-                            'advancedeucompliance'
-                        ),
-                        (string) $cmsRoles[Advancedeucompliance::LEGAL_SHIP_PAY]
-                    );
-
-                return;
-            }
-            Configuration::updateValue('AEUC_LABEL_SHIPPING_INC_EXC', true);
-        } else {
-            Configuration::updateValue('AEUC_LABEL_SHIPPING_INC_EXC', false);
-        }
-
-    }
-
-    /**
-     * @param bool $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucLabelWeight($isOptionActive)
-    {
-        if ((bool) $isOptionActive) {
-            Configuration::updateValue('PS_DISPLAY_PRODUCT_WEIGHT', true);
-            Configuration::updateValue('AEUC_LABEL_WEIGHT', true);
-        } elseif (!(bool) $isOptionActive) {
-            Configuration::updateValue('PS_DISPLAY_PRODUCT_WEIGHT', false);
-            Configuration::updateValue('AEUC_LABEL_WEIGHT', false);
-        }
-    }
-
-    /**
-     * @param bool $isOptionActive
-     *
-     * @since 1.0.0
-     */
-    protected function processAeucLabelCombinationFrom($isOptionActive)
-    {
-        if ((bool) $isOptionActive) {
-            Configuration::updateValue('AEUC_LABEL_COMBINATION_FROM', true);
-        } else {
-            Configuration::updateValue('AEUC_LABEL_COMBINATION_FROM', false);
-        }
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    protected function emptyTemplatesCache()
-    {
-        $this->_clearCache('product.tpl');
-        $this->_clearCache('product-list.tpl');
     }
 
     /**
@@ -874,23 +635,6 @@ class Advancedeucompliance extends Module
         return $this->display(__FILE__, 'hookOverrideTOSDisplay.tpl');
     }
 
-    private function hasCartVirtualProduct(Cart $cart)
-    {
-        $products = $cart->getProducts();
-
-        if (!count($products)) {
-            return false;
-        }
-
-        foreach ($products as $product) {
-            if ($product['is_virtual']) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     /**
      * @return string
      *
@@ -1083,21 +827,6 @@ class Advancedeucompliance extends Module
     }
 
     /**
-     * @param array $smartyVars
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    private function dumpHookDisplayProductPriceBlock(array $smartyVars)
-    {
-        $this->context->smarty->assign(['smartyVars' => $smartyVars]);
-        $this->context->controller->addJS($this->_path.'views/js/fo_aeuc_tnc.js', true);
-
-        return $this->display(__FILE__, 'hookDisplayProductPriceBlock.tpl');
-    }
-
-    /**
      * Load the configuration form
      */
     public function getContent()
@@ -1132,6 +861,350 @@ class Advancedeucompliance extends Module
         $formEmailAttachmentsManager = $this->renderFormEmailAttachmentsManager();
 
         return $themeWarning.$successBand.$formLabelsManager.$formFeaturesManager.$formLegalContentManager.$formEmailAttachmentsManager;
+    }
+
+    /**
+     * @return array|null
+     *
+     * @since 1.0.0
+     */
+    public function hookAdvancedPaymentOptions()
+    {
+        $legacyOptions = Hook::exec('displayPaymentEU', [], null, true);
+        $newOptions = [];
+
+        Media::addJsDef(
+            [
+                'aeuc_tos_err_str' => Tools::htmlentitiesUTF8(
+                    $this->l(
+                        'You must agree to our Terms of Service before going any further!',
+                        'advancedeucompliance'
+                    )
+                ),
+            ]
+        );
+        Media::addJsDef(
+            [
+                'aeuc_submit_err_str' => Tools::htmlentitiesUTF8(
+                    $this->l(
+                        'Something went wrong. If the problem persists, please contact us.',
+                        'advancedeucompliance'
+                    )
+                ),
+            ]
+        );
+        Media::addJsDef(
+            [
+                'aeuc_no_pay_err_str' => Tools::htmlentitiesUTF8(
+                    $this->l(
+                        'Select a payment option first.',
+                        'advancedeucompliance'
+                    )
+                ),
+            ]
+        );
+        Media::addJsDef(
+            [
+                'aeuc_virt_prod_err_str' => Tools::htmlentitiesUTF8(
+                    $this->l(
+                        'Please check "Revocation of virtual products" box first !',
+                        'advancedeucompliance'
+                    )
+                ),
+            ]
+        );
+        if ($legacyOptions) {
+            foreach ($legacyOptions as $moduleName => $legacyOption) {
+                if (!$legacyOption) {
+                    continue;
+                }
+
+                foreach (Core_Business_Payment_PaymentOption::convertLegacyOption($legacyOption) as $option) {
+                    /** @var Core_Business_Payment_PaymentOption $option */
+                    $option->setModuleName($moduleName);
+                    $toBeCleaned = $option->getForm();
+                    if ($toBeCleaned) {
+                        $cleaned = str_replace('@hiddenSubmit', '', $toBeCleaned);
+                        $option->setForm($cleaned);
+                    }
+                    $newOptions[] = $option;
+                }
+            }
+
+            return $newOptions;
+        }
+
+        return null;
+    }
+
+    protected function hasCartVirtualProduct(Cart $cart)
+    {
+        $products = $cart->getProducts();
+
+        if (!count($products)) {
+            return false;
+        }
+
+        foreach ($products as $product) {
+            if ($product['is_virtual']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucLabelRevocationTOS($isOptionActive)
+    {
+        // Check first if LEGAL_REVOCATION CMS Role has been set before doing anything here
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
+        $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_REVOCATION);
+        $cmsRoles = $this->getCMSRoles();
+
+        if ((bool) $isOptionActive) {
+            if (!$cmsPageAssociated instanceof CMSRole || (int) $cmsPageAssociated->id_cms == 0) {
+                $this->errors[] =
+                    sprintf(
+                        $this->l(
+                            '\'Revocation Terms within ToS\' label cannot be activated unless you associate "%s" role with a CMS Page.',
+                            'advancedeucompliance'
+                        ),
+                        (string) $cmsRoles[Advancedeucompliance::LEGAL_REVOCATION]
+                    );
+
+                return;
+            }
+            Configuration::updateValue('AEUC_LABEL_REVOCATION_TOS', true);
+        } else {
+            Configuration::updateValue('AEUC_LABEL_REVOCATION_TOS', false);
+        }
+    }
+
+    /**
+     * This hook is present to maintain backward compatibility
+     *
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucLabelRevocationVP($isOptionActive)
+    {
+        if ((bool) $isOptionActive) {
+            Configuration::updateValue('AEUC_LABEL_REVOCATION_VP', true);
+        } else {
+            Configuration::updateValue('AEUC_LABEL_REVOCATION_VP', false);
+        }
+    }
+
+    /**
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucLabelSpecificPrice($isOptionActive)
+    {
+        if ((bool) $isOptionActive) {
+            Configuration::updateValue('AEUC_LABEL_SPECIFIC_PRICE', true);
+        } else {
+            Configuration::updateValue('AEUC_LABEL_SPECIFIC_PRICE', false);
+        }
+    }
+
+    /**
+     * Get CMS roles
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    protected function getCMSRoles()
+    {
+        return [
+            Advancedeucompliance::LEGAL_NOTICE          => $this->l('Legal notice', 'advancedeucompliance'),
+            Advancedeucompliance::LEGAL_CONDITIONS      => $this->l('Terms of Service (ToS)', 'advancedeucompliance'),
+            Advancedeucompliance::LEGAL_REVOCATION      => $this->l('Revocation terms', 'advancedeucompliance'),
+            Advancedeucompliance::LEGAL_REVOCATION_FORM => $this->l('Revocation form', 'advancedeucompliance'),
+            Advancedeucompliance::LEGAL_PRIVACY         => $this->l('Privacy', 'advancedeucompliance'),
+            Advancedeucompliance::LEGAL_ENVIRONMENTAL   => $this->l('Environmental notice', 'advancedeucompliance'),
+            Advancedeucompliance::LEGAL_SHIP_PAY        => $this->l('Shipping and payment', 'advancedeucompliance'),
+        ];
+    }
+
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucLabelTaxIncExc($isOptionActive)
+    {
+        Configuration::updateValue('AEUC_LABEL_TAX_INC_EXC', (bool) $isOptionActive);
+    }
+
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucLabelShippingIncExc($isOptionActive)
+    {
+        // Check first if LEGAL_SHIP_PAY CMS Role has been set before doing anything here
+        $cmsRoleRepository = $this->entityManager->getRepository('CMSRole');
+        $cmsPageAssociated = $cmsRoleRepository->findOneByName(Advancedeucompliance::LEGAL_SHIP_PAY);
+        $cmsRoles = $this->getCMSRoles();
+
+        if ((bool) $isOptionActive) {
+            if (!$cmsPageAssociated instanceof CMSRole || (int) $cmsPageAssociated->id_cms === 0) {
+                $this->errors[] =
+                    sprintf(
+                        $this->l(
+                            'Shipping fees label cannot be activated unless you associate "%s" role with a CMS Page',
+                            'advancedeucompliance'
+                        ),
+                        (string) $cmsRoles[Advancedeucompliance::LEGAL_SHIP_PAY]
+                    );
+
+                return;
+            }
+            Configuration::updateValue('AEUC_LABEL_SHIPPING_INC_EXC', true);
+        } else {
+            Configuration::updateValue('AEUC_LABEL_SHIPPING_INC_EXC', false);
+        }
+
+    }
+
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucLabelWeight($isOptionActive)
+    {
+        if ((bool) $isOptionActive) {
+            Configuration::updateValue('PS_DISPLAY_PRODUCT_WEIGHT', true);
+            Configuration::updateValue('AEUC_LABEL_WEIGHT', true);
+        } elseif (!(bool) $isOptionActive) {
+            Configuration::updateValue('PS_DISPLAY_PRODUCT_WEIGHT', false);
+            Configuration::updateValue('AEUC_LABEL_WEIGHT', false);
+        }
+    }
+
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucLabelCombinationFrom($isOptionActive)
+    {
+        if ((bool) $isOptionActive) {
+            Configuration::updateValue('AEUC_LABEL_COMBINATION_FROM', true);
+        } else {
+            Configuration::updateValue('AEUC_LABEL_COMBINATION_FROM', false);
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    protected function emptyTemplatesCache()
+    {
+        $this->_clearCache('product.tpl');
+        $this->_clearCache('product-list.tpl');
+    }
+
+    /**
+     * @param array $smartyVars
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    protected function dumpHookDisplayProductPriceBlock(array $smartyVars)
+    {
+        $this->context->smarty->assign(['smartyVars' => $smartyVars]);
+        $this->context->controller->addJS($this->_path.'views/js/fo_aeuc_tnc.js', true);
+
+        return $this->display(__FILE__, 'hookDisplayProductPriceBlock.tpl');
+    }
+
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucFeatTellAFriend($isOptionActive)
+    {
+        $stafModule = Module::getInstanceByName('sendtoafriend');
+        if ($stafModule) {
+            if ((bool) $isOptionActive) {
+                Configuration::updateValue('AEUC_FEAT_TELL_A_FRIEND', true);
+                if ($stafModule->isEnabledForShopContext() === false) {
+                    $stafModule->enable();
+                }
+            } elseif (!(bool) $isOptionActive) {
+                Configuration::updateValue('AEUC_FEAT_TELL_A_FRIEND', false);
+                if ($stafModule->isEnabledForShopContext() === true) {
+                    $stafModule->disable();
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucFeatReorder($isOptionActive)
+    {
+
+        if ((bool) $isOptionActive) {
+            Configuration::updateValue('PS_DISALLOW_HISTORY_REORDERING', false);
+        } else {
+            Configuration::updateValue('PS_DISALLOW_HISTORY_REORDERING', true);
+        }
+    }
+
+    /**
+     * @param bool $isOptionActive
+     *
+     * @since 1.0.0
+     */
+    protected function processAeucFeatAdvPaymentApi($isOptionActive)
+    {
+        $this->refreshThemeStatus();
+
+        if ((bool) $isOptionActive) {
+            if ((bool) Configuration::get('AEUC_IS_THEME_COMPLIANT')) {
+                Configuration::updateValue('PS_ADVANCED_PAYMENT_API', true);
+                Configuration::updateValue('AEUC_FEAT_ADV_PAYMENT_API', true);
+            } else {
+                $this->errors[] = $this->l(
+                    'It is not possible to enable the "Advanced Checkout Page" as your theme is not compatible with this option.',
+                    'advancedeucompliance'
+                );
+            }
+        } else {
+            Configuration::updateValue('PS_ADVANCED_PAYMENT_API', false);
+            Configuration::updateValue('AEUC_FEAT_ADV_PAYMENT_API', false);
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    protected function refreshThemeStatus()
+    {
+        if ((bool) Configuration::get('AEUC_IS_THEME_COMPLIANT') === false) {
+            $reCheck = $this->isThemeCompliant();
+            if ($reCheck === true) {
+                Configuration::updateValue('AEUC_IS_THEME_COMPLIANT', (bool) $reCheck);
+            }
+        }
     }
 
     /**
