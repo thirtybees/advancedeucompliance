@@ -75,7 +75,7 @@ class Advancedeucompliance extends Module
     ) {
         $this->name = 'advancedeucompliance';
         $this->tab = 'administration';
-        $this->version = '3.1.1';
+        $this->version = '3.1.2';
         $this->author = 'thirty bees';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -489,11 +489,10 @@ class Advancedeucompliance extends Module
 
         $idLang = (int) $param['id_lang'];
         $mailId = AeucEmailEntity::getMailIdFromTplFilename($tplName);
-        if (!isset($mailId['id_mail'])) {
+        if (!$mailId) {
             return;
         }
 
-        $mailId = (int) $mailId['id_mail'];
         $cmsRoleIds = AeucCMSRoleEmailEntity::getCMSRoleIdsFromIdMail($mailId);
         if (!$cmsRoleIds) {
             return;

@@ -79,11 +79,11 @@ class AeucEmailEntity extends ObjectModel
     /**
      * @param string $tplName
      *
-     * @return array
+     * @return int
      */
     public static function getMailIdFromTplFilename($tplName)
     {
-        return (array) Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`'.bqSQL(static::$definition['primary']).'`')
                 ->from(bqSQL(static::$definition['table']))
