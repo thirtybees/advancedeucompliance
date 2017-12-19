@@ -3,7 +3,7 @@
  * 2007-2016 PrestaShop
  *
  * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
- * Copyright (C) 2017 Thirty Bees
+ * Copyright (C) 2017-2018 thirty bees
  *
  * NOTICE OF LICENSE
  *
@@ -17,7 +17,7 @@
  *
  * @author    Thirty Bees <modules@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2017 Thirty Bees
+ * @copyright 2017-2018 thirty bees
  * @copyright 2007-2016 PrestaShop SA
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
@@ -686,6 +686,8 @@ class Advancedeucompliance extends Module
         }
 
         $product = $param['product'];
+        $idShop = str_pad(Context::getContext()->shop->id, 3);
+        $idLang = str_pad(Context::getContext()->language->id, 3);
 
         if (is_array($product)) {
             $productRepository = $this->entityManager->getRepository('Product');
@@ -716,7 +718,7 @@ class Advancedeucompliance extends Module
                         $smartyVars['before_price'] = [];
                         $smartyVars['before_price']['from_str_i18n'] = $this->l('From');
 
-                        return $this->dumpHookDisplayProductPriceBlock($smartyVars);
+                        return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
                     }
                 }
 
@@ -729,7 +731,7 @@ class Advancedeucompliance extends Module
             $smartyVars['old_price'] = [];
             $smartyVars['old_price']['before_str_i18n'] = $this->l('Before');
 
-            return $this->dumpHookDisplayProductPriceBlock($smartyVars);
+            return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
         }
 
         /* Handle taxes  Inc./Exc. and Shipping Inc./Exc.*/
@@ -783,7 +785,7 @@ class Advancedeucompliance extends Module
                 }
             }
 
-            return $this->dumpHookDisplayProductPriceBlock($smartyVars);
+            return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
         }
 
         /* Handles product's weight */
@@ -796,7 +798,7 @@ class Advancedeucompliance extends Module
                 $smartyVars['weight']['rounded_weight_str_i18n'] =
                     $roundedWeight.' '.Configuration::get('PS_WEIGHT_UNIT');
 
-                return $this->dumpHookDisplayProductPriceBlock($smartyVars);
+                return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
             }
         }
 
@@ -815,7 +817,7 @@ class Advancedeucompliance extends Module
                 $smartyVars['after_price']['delivery_str_i18n'] = $contextualizedContent;
             }
 
-            return $this->dumpHookDisplayProductPriceBlock($smartyVars);
+            return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
         }
 
         return '';
@@ -1089,7 +1091,10 @@ class Advancedeucompliance extends Module
         $this->context->smarty->assign(['smartyVars' => $smartyVars]);
         $this->context->controller->addJS($this->_path.'views/js/fo_aeuc_tnc.js', true);
 
-        return $this->display(__FILE__, 'hookDisplayProductPriceBlock.tpl');
+        $idShop = str_pad(Context::getContext()->shop->id, 3);
+        $idLang = str_pad(Context::getContext()->language->id, 3);
+
+        return $this->display(__FILE__, 'hookDisplayProductPriceBlock.tpl', md5(json_encode($smartyVars).$idShop.$idLang));
     }
 
     /**
@@ -1188,7 +1193,7 @@ class Advancedeucompliance extends Module
             /* Case its one of form with only switches in it */
             if (in_array($keyReceived, $postKeysSwitchable)) {
                 $isOptionActive = Tools::getValue($keyReceived);
-                $key = Tools::strtolower($keyReceived);
+                $key = mb_strtolower($keyReceived);
                 $key = Tools::toCamelCase($key);
 
                 if (method_exists($this, 'process'.$key)) {
@@ -1200,7 +1205,7 @@ class Advancedeucompliance extends Module
             /* Case we are on more complex forms */
             if (in_array($keyReceived, $postKeysComplex)) {
                 // Clean key
-                $key = Tools::strtolower($keyReceived);
+                $key = mb_strtolower($keyReceived);
                 $key = Tools::toCamelCase($key, true);
 
                 if (method_exists($this, 'process'.$key)) {
