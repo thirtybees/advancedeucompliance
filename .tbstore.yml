@@ -1,0 +1,21 @@
+module_name: Advanced EU Compliance
+compatible_versions: 1.0.0+
+author: thirty bees
+category: front office
+tags:
+  - eu compliance
+  - eu checkout
+  - eu legal
+  - advancedeucompliance
+description_short: This module allows your shop to be compliant with EU checkout laws.
+description: description.md
+images:
+  - image-1.png
+gdpr_compliant: true
+license: AFL
+php_version:
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
