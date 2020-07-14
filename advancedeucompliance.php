@@ -54,8 +54,7 @@ class Advancedeucompliance extends Module
     protected $entityManager;
     protected $filesystem;
     protected $emails;
-    protected $errors;
-    protected $warnings;
+    protected $errors = [];
     protected $missingTemplates = [];
     // @codingStandardsIgnoreEnd
 
@@ -90,9 +89,6 @@ class Advancedeucompliance extends Module
         $this->displayName = $this->l('Advanced EU Compliance');
         $this->description = $this->l('This module helps European merchants comply with applicable e-commerce laws.');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
-
-        /* Init errors var */
-        $this->errors = [];
     }
 
     /**
@@ -1250,9 +1246,9 @@ class Advancedeucompliance extends Module
         if ($hasProcessedSomething) {
             $this->emptyTemplatesCache();
 
-            return (count($this->errors) ? $this->displayError($this->errors) : '').(count($this->warnings) ? $this->displayWarning($this->warnings) : '').$this->displayConfirmation($this->l('Settings saved successfully!'));
+            return (count($this->errors) ? $this->displayError($this->errors) : '').$this->displayConfirmation($this->l('Settings saved successfully!'));
         } else {
-            return (count($this->errors) ? $this->displayError($this->errors) : '').(count($this->warnings) ? $this->displayWarning($this->warnings) : '').'';
+            return (count($this->errors) ? $this->displayError($this->errors) : '');
         }
     }
 
