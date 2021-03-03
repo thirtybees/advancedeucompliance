@@ -1905,7 +1905,7 @@ class Advancedeucompliance extends Module
      */
     protected function processAeucEmailAttachmentsManager()
     {
-        $jsonAttachAssoc = Tools::jsonDecode(Tools::getValue('emails_attach_assoc'));
+        $jsonAttachAssoc = json_decode(Tools::getValue('emails_attach_assoc'));
 
         if (!$jsonAttachAssoc) {
             return;
