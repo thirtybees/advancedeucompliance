@@ -63,10 +63,11 @@ class Advancedeucompliance extends Module
      * Advancedeucompliance constructor.
      *
      * @param Core_Foundation_Database_EntityManager $entityManager
-     * @param Core_Foundation_FileSystem_FileSystem  $fs
-     * @param Core_Business_Email_EmailLister        $email
+     * @param Core_Foundation_FileSystem_FileSystem $fs
+     * @param Core_Business_Email_EmailLister $email
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct(
         Core_Foundation_Database_EntityManager $entityManager,
@@ -97,6 +98,10 @@ class Advancedeucompliance extends Module
      *
      * @return bool Indicates whether this module has been successfully installed
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      * @since 1.0.0
      */
     public function install()
@@ -125,6 +130,9 @@ class Advancedeucompliance extends Module
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function loadTables()
@@ -168,6 +176,9 @@ class Advancedeucompliance extends Module
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function installHooks()
@@ -214,6 +225,9 @@ class Advancedeucompliance extends Module
     /**
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function registerModulesBackwardCompatHook()
@@ -254,6 +268,9 @@ class Advancedeucompliance extends Module
      *
      * @return bool
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      * @since 1.0.0
      */
     public function createConfig()
@@ -350,6 +367,9 @@ class Advancedeucompliance extends Module
      *
      * @return bool
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function uninstall()
@@ -364,6 +384,9 @@ class Advancedeucompliance extends Module
      *
      * @return bool
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function dropConfig()
@@ -404,6 +427,7 @@ class Advancedeucompliance extends Module
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function uninstallTables()
     {
@@ -420,6 +444,9 @@ class Advancedeucompliance extends Module
      *
      * @return bool
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function disable($forceAll = false)
@@ -435,6 +462,8 @@ class Advancedeucompliance extends Module
      *
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function hookDisplayCartTotalPriceLabel($param)
@@ -470,6 +499,8 @@ class Advancedeucompliance extends Module
     /**
      * @param array $param
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function hookActionEmailAddAfterContent($param)
@@ -549,6 +580,9 @@ class Advancedeucompliance extends Module
     /**
      * @return string
      *
+     * @throws Core_Foundation_Database_Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function hookOverrideTOSDisplay()
@@ -630,6 +664,8 @@ class Advancedeucompliance extends Module
     /**
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function hookDisplayBeforeShoppingCartBlock()
@@ -651,6 +687,8 @@ class Advancedeucompliance extends Module
      * @param array $params
      *
      * @return string
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookDisplayAfterShoppingCartBlock($params)
     {
@@ -675,6 +713,8 @@ class Advancedeucompliance extends Module
      * @return string
      *
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookDisplayProductPriceBlock($param)
     {
@@ -822,6 +862,10 @@ class Advancedeucompliance extends Module
 
     /**
      * Load the configuration form
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @throws HTMLPurifier_Exception
      */
     public function getContent()
     {
@@ -856,6 +900,7 @@ class Advancedeucompliance extends Module
      * @return array|null
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function hookAdvancedPaymentOptions()
     {
@@ -906,6 +951,11 @@ class Advancedeucompliance extends Module
         return null;
     }
 
+    /**
+     * @param Cart $cart
+     * @return bool
+     * @throws PrestaShopException
+     */
     protected function hasCartVirtualProduct(Cart $cart)
     {
         $products = $cart->getProducts();
@@ -926,6 +976,8 @@ class Advancedeucompliance extends Module
     /**
      * @param bool $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucLabelRevocationTOS($isOptionActive)
@@ -953,6 +1005,8 @@ class Advancedeucompliance extends Module
      *
      * @param $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucLabelRevocationVP($isOptionActive)
@@ -967,6 +1021,8 @@ class Advancedeucompliance extends Module
     /**
      * @param $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucLabelSpecificPrice($isOptionActive)
@@ -1001,6 +1057,8 @@ class Advancedeucompliance extends Module
     /**
      * @param bool $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucLabelTaxIncExc($isOptionActive)
@@ -1011,6 +1069,8 @@ class Advancedeucompliance extends Module
     /**
      * @param bool $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucLabelShippingIncExc($isOptionActive)
@@ -1040,6 +1100,8 @@ class Advancedeucompliance extends Module
     /**
      * @param bool $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucLabelWeight($isOptionActive)
@@ -1056,6 +1118,8 @@ class Advancedeucompliance extends Module
     /**
      * @param bool $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucLabelCombinationFrom($isOptionActive)
@@ -1069,6 +1133,7 @@ class Advancedeucompliance extends Module
 
     /**
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function emptyTemplatesCache()
     {
@@ -1081,6 +1146,8 @@ class Advancedeucompliance extends Module
      *
      * @return string
      *
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     protected function dumpHookDisplayProductPriceBlock(array $smartyVars)
@@ -1097,6 +1164,10 @@ class Advancedeucompliance extends Module
     /**
      * @param bool $isOptionActive
      *
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucFeatTellAFriend($isOptionActive)
@@ -1120,6 +1191,8 @@ class Advancedeucompliance extends Module
     /**
      * @param $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucFeatReorder($isOptionActive)
@@ -1135,6 +1208,8 @@ class Advancedeucompliance extends Module
     /**
      * @param bool $isOptionActive
      *
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function processAeucFeatAdvPaymentApi($isOptionActive)
@@ -1156,6 +1231,9 @@ class Advancedeucompliance extends Module
 
     /**
      * @since 1.0.0
+     *
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     protected function refreshThemeStatus()
     {
@@ -1169,6 +1247,9 @@ class Advancedeucompliance extends Module
 
     /**
      * Save form data.
+     *
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     protected function _postProcess()
     {
@@ -1255,6 +1336,8 @@ class Advancedeucompliance extends Module
 
     /**
      * Set values for the inputs.
+     *
+     * @throws PrestaShopException
      */
     protected function getConfigFormLabelsManagerValues()
     {
@@ -1291,6 +1374,8 @@ class Advancedeucompliance extends Module
 
     /**
      * Set values for the inputs.
+     *
+     * @throws PrestaShopException
      */
     protected function getConfigFormFeaturesManagerValues()
     {
@@ -1302,6 +1387,11 @@ class Advancedeucompliance extends Module
         ];
     }
 
+    /**
+     * @param array $i10NInputs
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     */
     protected function processAeucLabelDeliveryTime(array $i10NInputs)
     {
         if (isset($i10NInputs['AEUC_LABEL_DELIVERY_TIME_AVAILABLE'])) {
@@ -1312,6 +1402,11 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @param array $i10NInputs
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     */
     protected function processAeucShoppingCartText(array $i10NInputs)
     {
         if (isset($i10NInputs['AEUC_SHOPPING_CART_TEXT_BEFORE'])) {
@@ -1324,6 +1419,9 @@ class Advancedeucompliance extends Module
 
     /**
      * Create the form that will let user choose all the wording options
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function renderFormLabelsManager()
     {
@@ -1352,6 +1450,8 @@ class Advancedeucompliance extends Module
 
     /**
      * Create the structure of your form.
+     *
+     * @throws PrestaShopException
      */
     protected function getConfigFormLabelsManager()
     {
@@ -1557,6 +1657,9 @@ class Advancedeucompliance extends Module
 
     /**
      * Create the form that will let user choose all the wording options
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function renderFormFeaturesManager()
     {
@@ -1684,6 +1787,9 @@ class Advancedeucompliance extends Module
 
     /**
      * Create the form that will let user manage his legal page trough "CMS" feature
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function renderFormLegalContentManager()
     {
@@ -1729,6 +1835,12 @@ class Advancedeucompliance extends Module
         return $this->display(__FILE__, 'views/templates/admin/legal_cms_manager_form.tpl');
     }
 
+    /**
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     protected function renderFormEmailAttachmentsManager()
     {
         $cmsRolesAeuc = $this->getCMSRoles();
@@ -1771,6 +1883,11 @@ class Advancedeucompliance extends Module
         return $this->display(__FILE__, 'views/templates/admin/email_attachments_form.tpl');
     }
 
+    /**
+     * @param $optionValue
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     */
     protected function processPsProductWeightPrecision($optionValue)
     {
         $optionValue = (int) $optionValue;
@@ -1783,6 +1900,11 @@ class Advancedeucompliance extends Module
         Configuration::updateValue('PS_PRODUCT_WEIGHT_PRECISION', (int) $optionValue);
     }
 
+    /**
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function processAeucEmailAttachmentsManager()
     {
         $jsonAttachAssoc = Tools::jsonDecode(Tools::getValue('emails_attach_assoc'));
@@ -1805,16 +1927,29 @@ class Advancedeucompliance extends Module
         }
     }
 
+    /**
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     */
     protected function processDiscardTplWarn()
     {
         Configuration::updateValue('AEUC_IS_THEME_COMPLIANT', true);
     }
 
+    /**
+     * @param $isOptionActive
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     */
     protected function processPsAtcpShipWrap($isOptionActive)
     {
         Configuration::updateValue('PS_ATCP_SHIPWRAP', $isOptionActive);
     }
 
+    /**
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function processAeucLegalContentManager()
     {
         $postedValues = Tools::getAllValues();

@@ -34,8 +34,10 @@ if (!defined('_TB_VERSION_')) {
  */
 class AdminAEUCController extends ModuleAdminController
 {
+
     /**
      * AdminAEUCController constructor.
+     * @throws PrestaShopException
      */
     public function __construct()
     {
