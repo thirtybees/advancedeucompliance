@@ -76,7 +76,7 @@ class Advancedeucompliance extends Module
     ) {
         $this->name = 'advancedeucompliance';
         $this->tab = 'administration';
-        $this->version = '3.1.4';
+        $this->version = '3.2.0';
         $this->author = 'thirty bees';
         $this->need_instance = 0;
         $this->bootstrap = true;
