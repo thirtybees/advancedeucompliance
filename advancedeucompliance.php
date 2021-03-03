@@ -30,7 +30,8 @@ if (!defined('_TB_VERSION_')) {
     exit;
 }
 
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/classes/AeucCMSRoleEmailEntity.php';
+require_once __DIR__.'/classes/AeucEmailEntity.php';
 
 /**
  * Class Advancedeucompliance
