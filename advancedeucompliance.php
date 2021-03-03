@@ -723,8 +723,6 @@ class Advancedeucompliance extends Module
         }
 
         $product = $param['product'];
-        $idShop = str_pad(Context::getContext()->shop->id, 3);
-        $idLang = str_pad(Context::getContext()->language->id, 3);
 
         if (is_array($product)) {
             $productRepository = $this->entityManager->getRepository('Product');
@@ -755,7 +753,7 @@ class Advancedeucompliance extends Module
                         $smartyVars['before_price'] = [];
                         $smartyVars['before_price']['from_str_i18n'] = $this->l('From');
 
-                        return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
+                        return $this->dumpHookDisplayProductPriceBlock($smartyVars);
                     }
                 }
 
@@ -768,7 +766,7 @@ class Advancedeucompliance extends Module
             $smartyVars['old_price'] = [];
             $smartyVars['old_price']['before_str_i18n'] = $this->l('Before');
 
-            return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
+            return $this->dumpHookDisplayProductPriceBlock($smartyVars);
         }
 
         /* Handle taxes  Inc./Exc. and Shipping Inc./Exc.*/
@@ -822,7 +820,7 @@ class Advancedeucompliance extends Module
                 }
             }
 
-            return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
+            return $this->dumpHookDisplayProductPriceBlock($smartyVars);
         }
 
         /* Handles product's weight */
@@ -835,7 +833,7 @@ class Advancedeucompliance extends Module
                 $smartyVars['weight']['rounded_weight_str_i18n'] =
                     $roundedWeight.' '.Configuration::get('PS_WEIGHT_UNIT');
 
-                return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
+                return $this->dumpHookDisplayProductPriceBlock($smartyVars);
             }
         }
 
@@ -854,7 +852,7 @@ class Advancedeucompliance extends Module
                 $smartyVars['after_price']['delivery_str_i18n'] = $contextualizedContent;
             }
 
-            return $this->dumpHookDisplayProductPriceBlock($smartyVars, md5(json_encode($smartyVars).$idShop.$idLang));
+            return $this->dumpHookDisplayProductPriceBlock($smartyVars);
         }
 
         return '';
