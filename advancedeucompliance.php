@@ -568,13 +568,23 @@ class Advancedeucompliance extends Module
             'order-opc',
             'category',
             'products-comparison',
-
+        ];
+        
+        $jsRequired = [
+            'index',
+            'product',
+            'category',
+            'products-comparison'
         ];
 
         if (isset($this->context->controller->php_self) && in_array($this->context->controller->php_self, $cssRequired)) {
             $this->context->controller->addCSS($this->_path.'views/css/aeuc_front.css', 'all');
         }
-
+        
+        
+        if (isset($this->context->controller->php_self) && in_array($this->context->controller->php_self, $jsRequired)) {
+            $this->context->controller->addJS($this->_path.'views/js/fo_aeuc_tnc.js', true);
+        }
     }
 
     /**
@@ -1151,7 +1161,6 @@ class Advancedeucompliance extends Module
     protected function dumpHookDisplayProductPriceBlock(array $smartyVars)
     {
         $this->context->smarty->assign(['smartyVars' => $smartyVars]);
-        $this->context->controller->addJS($this->_path.'views/js/fo_aeuc_tnc.js', true);
 
         $idShop = str_pad(Context::getContext()->shop->id, 3);
         $idLang = str_pad(Context::getContext()->language->id, 3);
