@@ -585,6 +585,10 @@ class Advancedeucompliance extends Module
         if (isset($this->context->controller->php_self) && in_array($this->context->controller->php_self, $jsRequired)) {
             $this->context->controller->addJS($this->_path.'views/js/fo_aeuc_tnc.js', true);
         }
+        
+        if (Configuration::get('AEUC_FEAT_ADV_PAYMENT_API') && isset($this->context->controller->php_self) && $this->context->controller->php_self == 'order') {
+            $this->context->controller->addJS(_THEME_JS_DIR_.'order-address.js');
+        }
     }
 
     /**
