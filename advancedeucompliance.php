@@ -568,6 +568,11 @@ class Advancedeucompliance extends Module
             'order-opc',
             'category',
             'products-comparison',
+            'manufacturer',
+            'supplier',
+            'prices-drop',
+            'best-sales',
+            'new-products'
         ];
         
         $jsRequired = [
