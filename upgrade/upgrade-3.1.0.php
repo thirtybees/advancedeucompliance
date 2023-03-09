@@ -27,6 +27,12 @@ if (!defined('_TB_VERSION_')) {
     exit;
 }
 
+/**
+ * @param Advancedeucompliance $module
+ *
+ * @return true
+ * @throws PrestaShopException
+ */
 function upgrade_module_3_1_0($module)
 {
     try {

@@ -29,14 +29,13 @@ if (!defined('_TB_VERSION_')) {
 
 /**
  * Class AdminAEUCController
- *
- * @since 1.0.0
  */
 class AdminAEUCController extends ModuleAdminController
 {
 
     /**
      * AdminAEUCController constructor.
+     *
      * @throws PrestaShopException
      */
     public function __construct()
@@ -54,6 +53,9 @@ class AdminAEUCController extends ModuleAdminController
      * Render view
      *
      * @return string
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderView()
     {

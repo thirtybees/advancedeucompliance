@@ -29,6 +29,7 @@ use Db;
 use DbQuery;
 use ObjectModel;
 use PrestaShopDatabaseException;
+use PrestaShopException;
 
 if (!defined('_TB_VERSION_')) {
     exit;
@@ -36,8 +37,6 @@ if (!defined('_TB_VERSION_')) {
 
 /**
  * Class AeucCMSRoleEmailEntity
- *
- * @since 1.0.0
  */
 class AeucCMSRoleEmailEntity extends ObjectModel
 {
@@ -52,18 +51,23 @@ class AeucCMSRoleEmailEntity extends ObjectModel
             'id_cms_role' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true, 'db_type' => 'INT(11) UNSIGNED'],
         ],
     ];
-    // @codingStandardsIgnoreStart
-    /** @var string name */
+
+    /**
+     * @var string name
+     */
     public $id_cms_role;
-    /** @var integer id_cms */
+
+    /**
+     * @var int id_cms
+     */
     public $id_mail;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Truncate Table
      *
-     * @return array|false
+     * @return bool
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function truncate()
     {
@@ -77,7 +81,10 @@ class AeucCMSRoleEmailEntity extends ObjectModel
      *
      * @param int $idCmsRole
      *
-     * @return array|false
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getIdEmailFromCMSRoleId($idCmsRole)
     {
@@ -92,8 +99,10 @@ class AeucCMSRoleEmailEntity extends ObjectModel
     /**
      * Return the complete email collection from DB
      *
-     * @return array|false
+     * @return array
+     *
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getAll()
     {
@@ -108,6 +117,9 @@ class AeucCMSRoleEmailEntity extends ObjectModel
      * @param int $idMail
      *
      * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getCMSRoleIdsFromIdMail($idMail)
     {

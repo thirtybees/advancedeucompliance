@@ -29,6 +29,7 @@ use Db;
 use DbQuery;
 use ObjectModel;
 use PrestaShopDatabaseException;
+use PrestaShopException;
 
 if (!defined('_TB_VERSION_')) {
     exit;
@@ -36,8 +37,6 @@ if (!defined('_TB_VERSION_')) {
 
 /**
  * Class AeucEmailEntity
- *
- * @since 1.0.0
  */
 class AeucEmailEntity extends ObjectModel
 {
@@ -52,20 +51,29 @@ class AeucEmailEntity extends ObjectModel
             'display_name' => ['type' => self::TYPE_STRING, 'required' => true, 'db_type' => 'VARCHAR(64)', 'size' => 64],
         ],
     ];
-    // @codingStandardsIgnoreStart
-    /** @var integer id_mail */
+
+    /**
+     * @var int id_mail
+     */
     public $id_mail;
-    /** @var string filename */
+
+    /**
+     * @var string filename
+     */
     public $filename;
-    /** @var string display_name */
+
+    /**
+     * @var string display_name
+     */
     public $display_name;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Return the complete email collection from DB
      *
-     * @return array|false
+     * @return array
+     *
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getAll()
     {
@@ -80,6 +88,9 @@ class AeucEmailEntity extends ObjectModel
      * @param string $tplName
      *
      * @return int
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getMailIdFromTplFilename($tplName)
     {
