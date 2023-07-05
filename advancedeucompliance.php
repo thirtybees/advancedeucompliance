@@ -257,6 +257,7 @@ class Advancedeucompliance extends Module
             'ogone',
             'moneybookers',
             'syspay',
+            'paylikepayment'
         ];
         $displayPaymentEuHookId = (int) Hook::getIdByName('displayPaymentEu');
         $alreadyHookedModulesIds = array_keys(Hook::getModulesFromHook($displayPaymentEuHookId));
