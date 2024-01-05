@@ -1513,10 +1513,7 @@ class Advancedeucompliance extends Module
                         'name'    => 'AEUC_LABEL_WEIGHT',
                         'is_bool' => true,
 
-                        'desc'   => sprintf(
-                            $this->l('Display the weight of a product (when information is available and product weighs more than 1 %s).'),
-                            Configuration::get('PS_WEIGHT_UNIT')
-                        ),
+                        'desc'   => $this->l('Display the weight of a product (when information is available)'),
                         'values' => [
                             [
                                 'id'    => 'active_on',
