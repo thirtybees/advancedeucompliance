@@ -1763,7 +1763,6 @@ class Advancedeucompliance extends Module
      *
      * @return string
      *
-     * @throws Core_Foundation_Database_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -1775,20 +1774,12 @@ class Advancedeucompliance extends Module
         $cmsRoleRepository = $this->getCMSRoleRepository();
         $cmsRoles = $cmsRoleRepository->findByName(array_keys($cmsRolesAeuc));
         $cmsRolesAssoc = [];
-        $idLang = Context::getContext()->employee->id_lang;
-        $idShop = Context::getContext()->shop->id;
+        $idLang = (int)Context::getContext()->employee->id_lang;
+        $idShop = (int)Context::getContext()->shop->id;
 
         foreach ($cmsRoles as $cmsRole) {
-            if ((int) $cmsRole->id_cms > 0) {
-                $cmsEntity = $cmsRepository->findOne((int) $cmsRole->id_cms);
-                $assocCmsName = $cmsEntity->meta_title[(int) $idLang];
-            } else {
-                $assocCmsName = $this->l('-- Select associated CMS page --');
-            }
-
             $cmsRolesAssoc[(int) $cmsRole->id] = [
                 'id_cms'     => (int) $cmsRole->id_cms,
-                'page_title' => (string) $assocCmsName,
                 'role_title' => (string) $cmsRolesAeuc[$cmsRole->name],
             ];
         }
