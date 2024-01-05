@@ -1796,7 +1796,7 @@ class Advancedeucompliance extends Module
                 'cms_roles_assoc' => $cmsRolesAssoc,
                 'cms_pages'       => $cmsPages,
                 'form_action'     => $this->context->link->getAdminLink('AdminModules').'&configure='.$this->name,
-                'add_cms_link'    => $this->context->link->getAdminLink('AdminCMS'),
+                'add_cms_link'    => $this->context->link->getAdminLink('AdminCmsContent'),
             ]
         );
 
