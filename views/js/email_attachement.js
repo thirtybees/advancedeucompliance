@@ -16,7 +16,7 @@
  *
  * @author    Thirty Bees <modules@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
- * @c0pyright 2017-2024 thirty bees
+ * @copyright 2017-2024 thirty bees
  * @copyright 2007-2016 PrestaShop SA
  * @license   https://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
